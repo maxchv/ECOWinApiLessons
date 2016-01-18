@@ -1,0 +1,124 @@
+// Листинг 1.15. Построение кривой Безье
+
+#include <fstream>
+static int sx, sy;
+const int SCALE = 1000;
+const int MARK = 4;
+void DcInLp(POINT &point)
+{
+	point.x = point.x* SCALE/sx;
+	point.y = SCALE - point.y* SCALE/sy;
+}
+void transform(HDC& hdc)
+{
+	SetMapMode(hdc, MM_ANISOTROPIC);
+	SetWindowExtEx(hdc, SCALE, -SCALE, NULL);
+	SetViewportExtEx(hdc, sx, sy, NULL);
+	SetViewportOrgEx(hdc, 0, sy, NULL);
+}
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+lParam)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+	static HPEN hDash, hBezier;
+	static HBRUSH hRect, hSel;
+	static POINT pt[20];
+	static POINT point;
+	RECT rt;
+	static int count, index;
+	static bool capture;
+	int i;
+	std::ifstream in;
+	std::ofstream out;
+	switch (message)
+	{
+	case WM_CREATE:
+		in.open("dat.txt");
+		if (in.fail())
+		{
+			MessageBox(hWnd,_T("Фaйл dat.txt не найден"),
+				_T("Открытие файла"), MB_OK | MB_ICONEXCLAMATION);
+			PostQuitMessage(0);
+			return 1;
+		}
+		for (count = 0; in >> pt[count].x; count++) in >> pt[count].y;
+		in.close(); //В переменной count сохранится размер массива точек
+		hDash = CreatePen(PS_DASH, 1, 0);
+		hBezier = CreatePen(PS_SOLID, 4, RGB(0, 0, 255));
+		hRect = CreateSolidBrush(RGB(128, 0, 128));
+		hSel = CreateSolidBrush(RGB(255, 0, 0));
+		break;
+	case WM_SIZE:
+		sx = LOWORD(lParam);
+		sy = HIWORD(lParam);
+		break;
+	case WM_LBUTTONDOWN:
+		point.x = LOWORD(lParam);
+		point.y = HIWORD(lParam);
+		//Преобразование экранных координат мыши в логические
+		DcInLp(point);
+		for (i = 0; i < count; i++)
+		{
+			SetRect(&rt,pt[i].x-MARK,pt[i].y-MARK,pt[i].x+MARK,pt[i].y+MARK);
+			if (PtInRect(&rt, point))
+			{	//Курсор мыши попал в точку
+				index = i;
+				capture = true;
+				hdc = GetDC(hWnd);
+				transform(hdc);		//Переход в логические координаты
+				FillRect(hdc, &rt, hSel);//Отметим прямоугольник цветом
+				ReleaseDC(hWnd, hdc);
+				SetCapture(hWnd);		//Захват мыши
+				return 0;
+			}
+		}
+		break;
+	case WM_LBUTTONUP:
+		if (capture)
+		{
+			ReleaseCapture();	//Освобождение мыши
+			capture = false;
+		}
+		break;
+	case WM_MOUSEMOVE:
+		if (capture)
+		{	//Мышь захвачена
+			point.x = LOWORD(lParam);
+			point.y = HIWORD(lParam);
+			DcInLp(point);//Преобразование экранных координат мыши
+			pt[index] = point;	//в логические координаты
+			InvalidateRect(hWnd, NULL, TRUE);
+		}
+		break;
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		transform(hdc); //Переход в логические координаты
+
+		SelectObject(hdc, hDash);
+		Polyline(hdc, pt, count);	//Строим ломаную линию
+		SelectObject(hdc, hBezier);
+		PolyBezier(hdc, pt, count); //Строим кривую Безье
+		for (i = 0; i < count; i++)
+		{	//Закрашиваем точки графика прямоугольниками
+			SetRect(&rt,pt[i].x-MARK,pt[i].y-MARK,pt[i].
+			x+MARK,pt[i].y+MARK);
+			FillRect(hdc, &rt, hRect);
+		}
+		EndPaint(hWnd, &ps);
+		break;
+	case WM_DESTROY:
+		DeleteObject(hDash);
+		DeleteObject(hBezier);
+		DeleteObject(hRect);
+		DeleteObject(hSel);
+		out.open("dat.txt");
+		for (i = 0;i<count;i++) out << pt[i].x << '\t' << pt[i].y << '\n';
+		out.close();
+		PostQuitMessage(0);
+		break;
+	default: return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
+

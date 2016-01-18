@@ -1,0 +1,37 @@
+//Листинг 4.1. Вывод в окне растрового изображения из ресурса приложения
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+	lParam)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+   HBITMAP hBitmap;
+   static HDC memBit;
+   static BITMAP bm;
+	switch (message)
+	{
+   case WM_CREATE:
+      hBitmap = LoadBitmap(hInst, MAKEINTRESOURCE (IDB_BITMAP1));
+      GetObject (hBitmap, sizeof(bm), &bm);
+      hdc = GetDC(hWnd);
+      memBit = CreateCompatibleDC(hdc);
+      SelectObject(memBit, hBitmap);
+      ReleaseDC (hWnd, hdc);
+      break;
+   case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDM_EXIT: DestroyWindow(hWnd);	break;
+		default: return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+        break;
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		BitBlt(hdc, 0, 0, bm.bmWidth, bm.bmHeight, memBit, 0, 0, SRCCOPY);
+		EndPaint(hWnd, &ps);
+		break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+	default: return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}

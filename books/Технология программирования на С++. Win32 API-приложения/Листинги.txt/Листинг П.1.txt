@@ -1,0 +1,50 @@
+//Листинг П.1. Поиск всех окон системы
+
+#include <string>
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+static std::wstring st(L"hProcess    hParent      idProcess    hWindows     Title\r\n");
+  HWND hFind;
+  static HWND hEdit;
+  TCHAR str[80], title[256];
+  LONG hProcess, hParentEdit;
+
+  DWORD id;
+  switch (message)
+  {
+  case WM_CREATE:
+    hEdit = CreateWindow(L"Edit", NULL, WS_CHILD|WS_VISIBLE|WS_HSCROLL|
+		WS_VSCROLL|ES_LEFT|ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL,
+      0, 0, 0, 0, hWnd, (HMENU) 1, hInst, NULL);
+	break;
+  case WM_SIZE:
+    MoveWindow(hEdit, 0, 0, LOWORD(lParam), HIWORD(lParam), TRUE);
+    break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case ID_FIND:
+      hFind = GetTopWindow(NULL);
+      do
+      {
+        hProcess = GetWindowLong(hFind,GWL_HINSTANCE);
+        hParentEdit = GetWindowLong(hFind, GWL_HWNDPARENT);
+        SendMessage(hFind, WM_GETTEXT, (WPARAM)256, (LPARAM)title);
+        GetWindowThreadProcessId(hFind, &id);
+        wsprintf(str, L"%.8x   %.8x   %.8d   %.8x     %s\r\n", hProcess,
+               hParentEdit, id, hFind, title);
+        st.append(str);
+        hFind = GetWindow(hFind, GW_HWNDNEXT);
+      }
+      while (hFind);
+      SetWindowText(hEdit, st.c_str());
+      break;
+    case IDM_EXIT: DestroyWindow(hWnd); break;
+    default: return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    break;
+  case WM_DESTROY: PostQuitMessage(0) ; break;
+  default: return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+return 0;
+}

@@ -1,0 +1,34 @@
+// Листинг 1.4. Обработка сообщений нажатия на кнопку мыши
+
+
+TCHAR *r_str = _T("Нажата правая кнопка мыши");
+TCHAR *l_str = _T("Нажата левая кнопка мыши");
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	HDC hdc;
+	int x, y;
+	switch (message)
+	{
+   case WM_RBUTTONDOWN:
+      x = LOWORD(lParam);
+      y = HIWORD(lParam);
+      hdc = GetDC(hWnd);
+      TextOut(hdc, x, y, r_str, _tcsclen(r_str));
+      ReleaseDC(hWnd, hdc);
+      break;
+   case WM_LBUTTONDOWN:
+      x = LOWORD(lParam);
+      y = HIWORD(lParam);
+      hdc = GetDC(hWnd);
+	  TextOut(hdc, x, y, l_str, _tcsclen(l_str));
+      ReleaseDC(hWnd, hdc);
+      break;
+   case WM_RBUTTONUP:
+   case WM_LBUTTONUP:
+      InvalidateRect(hWnd, NULL, TRUE);
+      break;
+   case WM_DESTROY : PostQuitMessage(0); break;
+   default : return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+return 0;
+}

@@ -1,0 +1,37 @@
+//Листинг 6.2. Создание потока
+
+TCHAR *pStr;
+DWORD WINAPI MyThread(LPVOID param)
+{
+  pStr = (TCHAR*)param;
+  return 0;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  PAINTSTRUCT ps;
+  HDC hdc;
+  TCHAR *str = _T("Работал поток!!!");
+  switch (message)
+  {
+    case WM_CREATE:
+      CreateThread(NULL, 0, MyThread, str, 0, NULL);
+	  break;
+	case WM_COMMAND:
+	  switch (LOWORD(wParam))
+	  {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+	case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      TextOut(hdc, 0, 0, pStr, _tcslen(pStr));
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}
+

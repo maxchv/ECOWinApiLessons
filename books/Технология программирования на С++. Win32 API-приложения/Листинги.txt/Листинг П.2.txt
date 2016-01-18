@@ -1,0 +1,56 @@
+//Листинг П.2. Поиск главного окна дочернего процесса
+
+
+TCHAR title[256] = _T("Новое окно блокнота");
+TCHAR CommandLine[256] = _T("notepad ReadMe.txt");
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  static STARTUPINFO tin;
+  static PROCESS_INFORMATION pInfo;
+  HWND hFind;
+  DWORD id, hParentEdit;
+  switch (message)
+  {
+  case WM_CREATE:
+    tin.cb = sizeof(STARTUPINFO);
+    tin.dwFlags = STARTF_USESHOWWINDOW;
+    tin.wShowWindow = SW_SHOWNORMAL;
+    CreateProcess(NULL, CommandLine, NULL, NULL, FALSE, 0, NULL, NULL,
+	               &tin, &pInfo);
+    CloseHandle(pInfo.hThread);
+    CloseHandle(pInfo.hProcess);
+    break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case ID_FINDWINDOWS:
+      hFind = GetTopWindow(NULL);
+      do 
+      {
+        if (hFind == 0)
+        {
+          MessageBox(hWnd, _T("Окно не нейдено"),
+                    _T("Ошибка поиска"), MB_OK | MB_ICONQUESTION);
+          DestroyWindow(hWnd);
+          return 1;
+        }
+        GetWindowThreadProcessId(hFind, &id);
+        hParentEdit = GetWindowLong(hFind, GWL_HWNDPARENT);
+        if (hParentEdit == 0 && id == pInfo.dwProcessId)
+        {
+          SendMessage (hFind, WM_SETTEXT, 0, (LPARAM)title);
+          return 0;
+        }
+        hFind = GetWindow(hFind, GW_HWNDNEXT);
+      }
+      while (true);
+      break;
+    case IDM_EXIT: DestroyWindow(hWnd); break;
+    default: return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    break;
+  case WM_DESTROY: PostQuitMessage(0); break;
+  default: return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+  return 0;
+}

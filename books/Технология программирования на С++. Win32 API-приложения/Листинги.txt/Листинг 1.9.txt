@@ -1,0 +1,74 @@
+// Листинг 1.9. Вывод графиков в локальной системе координат
+
+#define _USE_MATH_DEFINES
+#include <cmath>
+const int WIDTH = 314;
+const int HEIGHT = 200;
+const double К = 4.0;
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   static int sx, sy;
+   static HPEN hpen1, hpen2;
+   int x_scr, y_scr;	//Экранные координаты
+   double x;			//Физические координаты
+   switch (message)
+   {
+   case WM_CREATE :		//Создаем перья
+      hpen1 = CreatePen(PS_SOLID,4,RGB(0, 0, 255));
+      hpen2 = CreatePen(PS_SOLID,4,RGB(255, 0, 0));
+      break;
+   case WM_SIZE: //Определяем физические размеры окна
+      sx = LOWORD(lParam);
+      sy = HIWORD(lParam);
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      //Установка режима
+      SetMapMode(hdc, MM_ANISOTROPIC);
+      //Установка логических размеров вывода, ось у направлена вверх
+
+      SetWindowExtEx (hdc, 2*WIDTH, -2*HEIGHT, NULL);
+      //Установка физических размеров на четверть окна
+      SetViewportExtEx(hdc, sx/2, sy/2, NULL);
+      //Установка начала координат
+      SetViewportOrgEx(hdc, sx/4, sy/4, NULL);
+      SelectObject(hdc, hpen1);			//Синее перо
+      MoveToEx(hdc, -WIDTH, 0, NULL);	//Рисуем координатные оси
+      LineTo(hdc, WIDTH, 0);
+      MoveToEx(hdc, 0, HEIGHT, NULL);
+      LineTo(hdc, 0, -HEIGHT);
+      SelectObject(hdc, hpen2);			//Красное перо
+      MoveToEx(hdc, -WIDTH, 0, NULL);
+      for (x = -M_PI, x_scr = -WIDTH; x < M_PI; x += 0.03, x_scr += 3)
+      {
+         y_scr = HEIGHT*sin(x);
+         LineTo(hdc, x_scr, y_scr);
+      }
+      // Перенос начала координат
+      SetViewportOrgEx(hdc, sx*3/4, sy/4, NULL);
+      SelectObject(hdc, GetStockObject(BLACK_PEN));	//Черное перо
+      MoveToEx(hdc, -WIDTH, 0, NULL);	//Рисуем координатные оси
+      LineTo(hdc, WIDTH, 0);
+      MoveToEx(hdc, 0, HEIGHT, NULL);
+      LineTo(hdc, 0, -HEIGHT);
+      SelectObject(hdc, hpen1);		//Синее перо
+      MoveToEx(hdc, 0, 0, NULL);	//Текущая точка в начале координат
+      for (double angle = 0.0; angle < 2*M_PI; angle += 0.02)
+      {
+         x_scr = HEIGHT*sin(К*angle)*cos(angle);
+         y_scr = HEIGHT*sin(К*angle)*sin(angle);
+         LineTo(hdc, x_scr, y_scr);
+      }
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY:
+      DeleteObject(hpen1);
+      DeleteObject(hpen2);
+      PostQuitMessage(0);
+      break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

@@ -1,0 +1,36 @@
+//Листинг 6.1. Создание процесса
+
+TCHAR CommandLine [256] = _T("notepad ReadMe.txt");
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   static STARTUPINFO tin;
+   static PROCESS_INFORMATION pInfo;
+   static DWORD exitCode;
+   switch (message)
+   {
+   case WM_CREATE:
+      tin.cb = sizeof(STARTUPINFO);
+	  tin.dwFlags = STARTF_USESHOWWINDOW;
+	  tin.wShowWindow = SW_SHOWNORMAL;
+	  break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case ID_FILE_OPEN:
+		  GetExitCodeProcess(pInfo.hProcess, &exitCode);
+          if (exitCode != STILL_ACTIVE) CreateProcess(NULL, CommandLine,
+                          NULL, NULL, FALSE, 0, NULL, NULL, &tin, &pInfo);
+          break;
+	  case ID_FILE_DELETE:
+          GetExitCodeProcess(pInfo.hProcess, &exitCode);
+          if (exitCode==STILL_ACTIVE) TerminateProcess(pInfo.hProcess, 0);
+		  break;
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

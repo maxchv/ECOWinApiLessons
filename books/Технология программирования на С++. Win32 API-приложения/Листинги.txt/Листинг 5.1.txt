@@ -1,0 +1,17 @@
+//Листинг 5.1. Описание DLL-библиотеки (dllmain.cpp)
+
+#include "stdafx.h"
+__declspec(dllexport) BOOL WINAPI Triangle(HDC, POINT*);
+BOOL APIENTRY DllMain(HANDLE hModule,
+	                  DWORD ul_reason_for_call,
+			  LPVOID lpReserved)
+{
+   return TRUE; //переключатель switch нам пока не нужен
+}
+BOOL WINAPI Triangle(HDC hdc, POINT *pt)
+{
+   MoveToEx(hdc, pt[0].x, pt[0].y,NULL);
+   LineTo(hdc, pt[1].x, pt[1].y);
+   LineTo(hdc, pt[2].x, pt[2].y);
+   return LineTo(hdc, pt[0].x, pt[0].y);
+}

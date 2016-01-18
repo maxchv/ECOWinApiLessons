@@ -1,0 +1,40 @@
+// Листинг 1.7. Построение кардиоиды
+
+#define _USE_MATH_DEFINES
+#include <cmath>
+const int R = 100;
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   static int sx, sy;
+   int a, b, x, y;		//Экранные координаты
+   double angle;		//Физические координаты
+   switch(message)
+   {
+   case WM_SIZE:
+      sx = LOWORD(lParam);	//Ширина окна
+      sy = HIWORD(lParam);	//Высота окна
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      a = sx/2;
+      b = sy/2;
+      MoveToEx(hdc, 0, b, NULL);
+      LineTo(hdc, sx, b);
+      MoveToEx(hdc, a, 0, NULL);
+      LineTo(hdc, a, sy);
+      MoveToEx(hdc, a, b, NULL);
+      for (angle = 0.0; angle < 2*M_PI; angle += 0.1)
+      {
+         x = a + R*(1 - cos(angle))*cos(angle);
+         y = b - R*(1 - cos(angle))*sin(angle);
+         LineTo(hdc, x, y);
+      }
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

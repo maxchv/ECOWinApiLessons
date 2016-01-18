@@ -1,0 +1,26 @@
+// Листинг 1.3. Программа эхо-печати
+
+#include <xstring>
+typedef std::basic_string<TCHAR, std::char_traits<TCHAR>,
+std::allocator<TCHAR> > String;
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   static String str;
+   switch (message)
+   {
+   case WM_CHAR:
+      str += (TCHAR)wParam;
+      InvalidateRect(hWnd, NULL, TRUE);
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      TextOut(hdc, 0, 0, str.data(), str.size());
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY : PostQuitMessage(0); break;
+   default : return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

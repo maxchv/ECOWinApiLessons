@@ -1,0 +1,43 @@
+//Листинг 6.14. Прием данных посредством сообщения wm_copydata
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  PAINTSTRUCT ps;
+
+  HDC hdc;
+  static int *p;
+  int x, y, *q;
+  TCHAR str[10];
+  switch (message)
+  {
+  case WM_COPYDATA:
+    p = new int[((COPYDATASTRUCT *)lParam)->cbData/sizeof(int)];
+    q = (int*) (((COPYDATASTRUCT *)lParam)->lpData);
+    for(int i = 0; i < 100; i++) p[i] = *q++;
+    InvalidateRect(hWnd, NULL, TRUE);
+    break;
+  case WM_COMMAND:
+    switch (LOWORD (wParam))
+    {
+    case IDM_EXIT: DestroyWindow(hWnd) ; break;
+    default: return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    break;
+  case WM_PAINT:
+    hdc = BeginPaint(hWnd, &ps);
+    if (p)
+    {
+      for (y = 0, q = p; y < 300; y += 30)
+        for (x = 0; x < 300; x += 30, q++)
+        {
+          _itot(*q, str, 10);
+          TextOut(hdc, x, y, str, _tcslen(str));
+        }
+    }
+    EndPaint (hWnd, &ps);
+	break;
+  case WM_DESTROY: PostQuitMessage (0); break ;
+  default: return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+  return 0;
+}

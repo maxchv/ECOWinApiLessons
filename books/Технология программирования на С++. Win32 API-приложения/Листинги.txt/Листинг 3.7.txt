@@ -1,0 +1,79 @@
+//Листинг 3.7. Оконная функция немодального диалогового окна
+
+HWND hDlqColor;
+
+INT_PTR CALLBACK Dialog(HWND, UINT, WPARAM, LPARAM);
+////////////////////////////////////////////////////////////////////
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+	lParam)
+{
+   switch (message)
+   {
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case ID_DIALDG_COLOR:
+         hDlqColor = CreateDialog(hInst, MAKEINTRESOURCE(IDD_COLOR),
+            hWnd, Dialog);
+         break;
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}
+/////////////////////////////////////////////////////////////////////
+INT_PTR CALLBACK Dialog(HWND hDlg, UINT message, WPARAM	wParam, LPARAM lParam)
+{
+   static int ID_SCROLL[3] = {IDC_RED, IDC_GREEN, IDC_BLUE};
+   static int ID[3] = {IDC_R, IDC_G, IDC_B};
+   static HWND hWnd, hScroll[3];           //(hRed, hGreen, hBlue)
+   static int color[3] = {255, 255, 255};  //(red, green, blue)
+   HBRUSH hBrush;
+   int index;
+   switch (message)
+   {
+
+   case WM_INITDIALOG:
+      for (index = 0; index < 3; index++)
+      {
+         hScroll[index] = GetDlgItem(hDlg, ID_SCROLL[index]);
+         SetScrollRange(hScroll[index], SB_CTL, 0, 255, FALSE);
+         SetScrollPos (hScroll[index], SB_CTL, color[index], TRUE);
+         SetDlgItemInt(hDlg, ID[index], color[index], 0);
+      }
+      return TRUE;
+   case WM_VSCROLL :
+      for (index = 0; index < 3; index++)
+         if ((HWND)lParam == hScroll[index]) break;
+      SetFocus(hScroll[index]);
+      switch(LOWORD(wParam))
+      {
+      case SB_LINEUP   : color[index]--; break;
+      case SB_LINEDOWN : color[index]++; break;
+      case SB_PAGEUP   : color[index] -= 16; break;
+      case SB_PAGEDOWN : color[index] += 16; break;
+      case SB_THUMBTRACK:
+      case SB_THUMBPOSITION : color[index] = HIWORD(wParam); break;
+      }
+      color[index] = max(0, min(color[index], 255));
+      if (color[index] != GetScrollPos(hScroll[index], SB_CTL))
+      {
+         SetDlgItemInt(hDlg,ID[index],color[index],0);
+         SetScrollPos(hScroll[index], SB_CTL, color[index], TRUE);
+         hBrush = CreateSolidBrush(RGB(color[0],color[1],color[2]));
+         hWnd = GetParent(hDlg);
+         DeleteObject((HBRUSH)GetClassLong(hWnd, GCL_HBRBACKGROUND));
+         SetClassLong(hWnd, GCL_HBRBACKGROUND, (LONG)hBrush);
+         InvalidateRect(hWnd, NULL, TRUE);
+	  }
+      return TRUE;
+   case WM_COMMAND:
+      if (LOWORD(wParam) == IDCANCEL) {DestroyWindow(hDlg); return TRUE;}
+      return FALSE;
+   }
+   return FALSE;
+}

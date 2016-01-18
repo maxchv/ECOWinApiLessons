@@ -1,0 +1,68 @@
+//Листинг 4.3. Тест растровых операций для функции BitBlt()
+
+/*Чтобы задать фон окна, мы создали синюю кисть и установили ее
+ в свойствах класса окна до регистрации и системе:*/
+wcex.hbrBackground = CreateSolidBrush(RGB(0, 0, 255));
+///////////////////////////////////////////////////////////////////////
+
+
+
+DWORD Op[15] = {SRCCOPY, SRCPAINT, SRCAND, SRCINVERT, SRCERASE,
+     NOTSRCCOPY, NOTSRCERASE, MERGECOPY, MERGEPAINT, PATCOPY,
+     PATPAINT, PATINVERT, DSTINVERT, BLACKNESS, WHITENESS};
+TCHAR *Name_Op[15]={_T("SRCCOPY"), _T("SRCPAINT"), _T("SRCAND"),
+     _T("SRCINVERT"), _T("SRCERASE"), _T("NOTSRCCOPY"), _T("NOTSRCERASE"),
+     _T("MERGECOPY"), _T("MERGEPAINT"), _T("PATCOPY"), _T("PATPAINT"),
+     _T("PATINVERT"), _T("DSTINVERT"), _T("BLACKNESS"), _T("WHITENESS")};
+///////////////////////////////////////////////////////////////////////
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   int i, j, x;
+   static HFONT hFont;
+   static HDC memDC;
+   static HBITMAP hPicture;
+   static BITMAP bm;
+   switch (message)
+   {
+      case WM_CREATE:
+         hPicture = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BITMAP1));
+         GetObject(hPicture, sizeof(bm), &bm);
+         hdc = GetDC(hWnd);
+         memDC = CreateCompatibleDC(hdc);
+         SelectObject(memDC, hPicture);
+         ReleaseDC(hWnd, hdc);
+         hFont = CreateFont (12,0,0,0, FW_NORMAL,0,0,0,DEFAULT_CHARSET,
+               OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,
+               DEFAULT_PITCH | FF_DONTCARE, _T("Times New Roman"));
+         break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_PAINT:
+     hdc = BeginPaint(hWnd, &ps);
+     SelectObject(hdc, hFont);
+     for (i = x = 0; i < 15; i++, x += bm.bmWidth + 10)
+     {
+        TextOut(hdc, x, 10, Name_Op[i], _tcslen(Name_Op[i]));
+        BitBlt(hdc, x, 30, bm.bmWidth, bm.bmHeight, memDC, 0, 0, Op[i]);
+        for (j = 0; j < 15; j++) BitBlt(hdc, x, 30 + (j + 1)*
+           (bm.bmHeight+2), bm.bmWidth, bm.bmHeight, hdc, x, 30, Op[j]);
+     }
+     EndPaint(hWnd, &ps);
+     break;
+   case WM_DESTROY:
+     DeleteDC(memDC);
+     DeleteObject(hFont);
+     PostQuitMessage(0);
+     break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

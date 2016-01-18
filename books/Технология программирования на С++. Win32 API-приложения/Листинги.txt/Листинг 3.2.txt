@@ -1,0 +1,161 @@
+//Листинг 3.2. Оконная функция построения ху-графика
+
+//Для упрощения кода перенесем описание век-
+//тора v и итератора it на глобальный уровень:
+	static std::vector<std::string> v;
+	std::vector<std::string>::iterator it;
+
+//На глобальном уровне введем имя нового класса окна и опишем прототип оконной
+//функции построения графика:
+TCHAR WinClassGraphName[MAX_LOADSTRING] = _T("ChildClass");
+LRESULT CALLBACK WndGraph(HWND, UINT, WPARAM, LPARAM);
+
+//Для вывода графика добавим пункт меню ху-график с идентификатором ID_LINE.
+//Обработчик этой команды разместим в функции главного окна:
+case ID_LINE :
+	   if (IsWindow(hGraph)) break;
+	   RegisterGraphClass();
+	   hGraph = CreateWindow(WinClassGraphName, _T("xy-график"),
+	   WS_SYSMENU | WS_POPUP | WS_VISIBLE | WS_THICKFRAME | WS_CAPTION,
+	   sx/4, sy/4, min(sx, sy), min(sx, sy), hWnd,0, hInst, NULL);
+	    break;
+
+//Дескриптор опишем в оконной функции главного окна:
+	static HWND hGraph;
+
+//Регистрацию класса окна выделим в отдельную функцию:
+ATOM RegisterGraphClass()
+{
+	WNDCLASSEX wcgraph        = {0};
+	wcgraph.cbSize            = sizeof(WNDCLASSEX);
+	wcgraph.style             = CS_HREDRAW | CS_VREDRAW;
+	wcgraph.lpfnWndProc       = WndGraph;
+	wcgraph.hInstance         = hInst;
+	wcgraph.hCursor           = LoadCursor(NULL, IDC_CROSS);
+	wcgraph.hbrBackground     = (HBRUSH) (COLOR_WINDOW+1);
+	wcgraph.lpszClassName     = WinClassGraphName;
+	wcgraph.hIconSm           = LoadIcon(hInst,MAKEINTRESOURCE(IDI_ICON1));
+	return RegisterClassEx(&wcgraph);
+}
+
+//Листинг 3.2. Оконная функция построения ху-графика:
+const int scaleX = 8;      //Метки по оси х
+const int scaleY = 4;      //Метки по оси у
+const int indent = 25;     //Отступ для вывода меток оси х
+struct DOUDLE_POINT { double x, y; };
+const int GRAPHSIZE = 1200;
+const int GRAPHWIDTH = 1000;
+LRESULT CALLBACK WndGraph(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+	lParam)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+    static HPEN hline;
+
+    static HBRUSH hrect;
+    RECT rt;
+    static int n, sx, sy, kx, ky;
+    static double max_x, max_y, min_x, min_y;
+    int i, x, y;
+    static POINT *pt;
+    TCHAR s[20];
+    DOUDLE_POINT t;
+    double z, hx, hy;
+    static DOUDLE_POINT *xy;
+    switch (message)
+    { case WM_CREATE:
+         if ((n = v. size()) == 0)
+         {
+               MessageBox(hWnd, _T("Загрузите файл"), _T("Нет данных"),
+                         MB_OK | MB_ICONHAND);
+               DestroyWindow(hWnd);
+               return 1;
+          }
+         pt = new POINT[n];
+         xy = new DOUDLE_POINT[n];
+         for (it = v.begin(), i = 0; i < n; i++, it++)
+         {
+           if(sscanf(it->c_str(),"%lf %lf",&t.x, &t.y) != 2)
+		   {
+              MessageBoxA(hWnd, it->c_str(), "Ошибка данных", MB_OK|
+                          MB_ICONHAND);
+              DestroyWindow(hWnd);
+              return 1;
+           }
+          xy[i] = t;
+		 }
+         max_x = min_x = xy[0].x;
+         max_y = min_y = xy[0].y;
+         for (i = 1; i < n; i++)
+         {
+            if (max_x < xy[i].x) max_x = xy[i].x;
+               else if (min_x > xy[i].x) min_x = xy[i].x;
+            if (max_y < xy[i].y) max_y = xy[i].y;
+               else if (min_y > xy[i].y) min_y = xy[i].y;
+          }
+         hline = CreatePen(PS_SOLID, 6, RGB(0, 0, 255));
+         hrect = CreateSolidBrush(RGB(255,0,0));
+
+       hx = max_x - min_x;
+       hy = max_y - min_y;
+       for (i = 0; i < n; i++)
+       {
+          pt[i].x = int((xy[i].x - min_x)*GRAPHWIDTH/hx + 0.5);
+          pt[i].y = int((xy[i].y - min_y)*GRAPHWIDTH/hy + 0.5);
+        }
+       break;
+  case WM_SIZE:
+         sx = LOWORD(lParam);
+         sy = HIWORD(lParam);
+         break;
+      case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      hx = (max_x - min_x)/scaleX;
+      hy = (max_y - min_y)/scaleY;
+      SetMapMode(hdc, MM_ANISOTROPIC);
+      SetWindowExtEx(hdc, GRAPHSIZE, -GRAPHSIZE, NULL);
+      SetViewportExtEx(hdc, sx, sy, NULL);
+      SetViewportOrgEx(hdc, 2*indent, sy-indent, NULL);
+      SetTextAlign(hdc, TA_RIGHT | TA_TOP);
+      for (z = min_x, i = 0; i <= scaleX; z += hx, i++)
+      {
+        x = int((z - min_x)*GRAPHWIDTH/(max_x - min_x) + 0.5);
+        _stprintf(s, _T("%.1lf"), z);
+        TextOut(hdc, x, 0, s, _tcslen(s));
+        MoveToEx(hdc, x, -10, NULL);
+        LineTo(hdc, x, 10);
+       }
+       MoveToEx(hdc, 0, 0, NULL);
+       LineTo(hdc, GRAPHWIDTH, 0);
+       SetTextAlign(hdc, TA_RIGHT | TA_BOTTOM);
+       for (z = min_y, i = 0; i <= scaleY; z += hy, i++)
+       {
+         y = int((z - min_y) *GRAPHWIDTH/(max_y - min_y) + 0.5);
+         _stprintf(s, _T("%.1lf"), z);
+         TextOut(hdc, 0, y, s, _tcslen(s));
+         MoveToEx(hdc, -10, y, NULL);
+         LineTo(hdc, 10, y);
+        }
+        MoveToEx(hdc, 0, 0, NULL);
+        LineTo(hdc, 0, GRAPHWIDTH);
+        SelectObject(hdc, hline);
+
+			 Polyline(hdc, pt, n);
+			 for ( i = 0; i < n; i++)
+               {
+                   SetRect(&rt, pt[i].x-8, pt[i].y-8, pt[i].x+8, pt[i].y+8);
+                   FillRect(hdc, &rt, hrect);
+               }
+            EndPaint(hWnd, &ps);
+            break;
+         case WM_DESTROY:
+            DeleteObject(hline);
+            DeleteObject(hrect);
+            delete[] pt;
+            delete[] xy;
+            break;
+         default: return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+return 0;
+}
+

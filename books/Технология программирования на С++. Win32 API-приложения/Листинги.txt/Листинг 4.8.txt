@@ -1,0 +1,65 @@
+//Листинг 4.8. 
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+	lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   int r, g, b, maxX, maxY;
+   static int sx, sy;
+   static HDC memBit;
+   HBRUSH hBrush;
+   RECT rt;
+   HBITMAP hBitmap;
+   SYSTEMTIME tm;
+   switch (message)
+   {
+   case WM_CREATE:
+      SetTimer(hWnd, 1, 100, NULL);
+      maxX = GetSystemMetrics(SM_CXSCREEN);
+      maxY = GetSystemMetrics(SM_CYSCREEN);
+      hdc = GetDC(hWnd);
+      memBit = CreateCompatibleDC(hdc);
+
+      hBitmap = CreateCompatibleBitmap(hdc, maxX, maxY);
+      SelectObject(memBit, hBitmap);
+      PatBlt(memBit, 0, 0, maxX, maxY, WHITENESS);
+      ReleaseDC(hWnd, hdc);
+      GetSystemTime(&tm);
+      srand(tm.wMilliseconds);
+      break;
+   case WM_SIZE:
+      sx = LOWORD(lParam);
+      sy = HIWORD(lParam);
+      break;
+   case WM_TIMER:
+      rt.right = (rt.left = rand()*sx/RAND_MAX) + rand()*sx/RAND_MAX/2;
+      rt.top = (rt.bottom = rand()*sy/RAND_MAX) - rand()*sy/RAND_MAX/2;
+      r = rand()*255/RAND_MAX;
+      g = rand()*255/RAND_MAX;
+      b = rand()*255/RAND_MAX;
+      hBrush = CreateSolidBrush(RGB(r,g,b));
+      FillRect(memBit, &rt, hBrush);
+      DeleteObject(hBrush);
+      InvalidateRect(hWnd, NULL, 0);
+      break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      BitBlt(hdc, 0, 0, sx, sy, memBit, 0, 0, SRCCOPY);
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY:
+      DeleteObject(memBit);
+      PostQuitMessage(0);
+      break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

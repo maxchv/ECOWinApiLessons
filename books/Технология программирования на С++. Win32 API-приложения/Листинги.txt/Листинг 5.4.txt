@@ -1,0 +1,21 @@
+//Листинг 5.4. Библиотека динамической компоновки, содержащая ресурсы
+
+#include "stdafx.h"
+#include "resource.h"
+__declspec(dllexport) HICON hIcon;
+BOOL APIENTRY DllMain(HMODULE hModule, 
+                      DWORD ul_reason_for_call,
+                      LPVOID lpReserved
+                      )
+{
+   switch (ul_reason_for_call)
+   {
+   case DLL_PROCESS_ATTACH:
+      hIcon = LoadIcon(hModule, MAKEINTRESOURCE(IDI_ICON1));
+      break;
+   case DLL_PROCESS_DETACH:
+      DestroyIcon(hIcon);
+      break;
+   }
+   return TRUE;
+}

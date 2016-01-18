@@ -1,0 +1,120 @@
+//Листинг 3.6. Текстовый редактор с элементом управления Edit Box
+
+#include <commdlg.h>
+#include <commctrl.h>
+#include <fstream>
+TBBUTTON tbb[] =
+{{STD_FILENEW, ID_FILE_NEW, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0, 0, 0, 0},
+{STD_FILEOPEN, ID_FILE_OPEN,TBSTATE_ENABLED,TBSTYLE_BUTTON, 0, 0, 0, 0},
+{STD_FILESAVE, ID_FILE_SAVE,TBSTATE_ENABLED,TBSTYLE_BUTTON, 0, 0, 0, 0}
+};
+/////////////////////////////////////////////////////////////////////
+VOID StatusOut(HWND hStatus, int count, TCHAR *str)
+{
+  TCHAR text [256];
+  _stprintf(text,_T("Ctpok: %d"), count);
+  SendMessage(hStatus, SB_SETTEXT, (WPARAM)0, (LPARAM) text);
+  SendMessage(hStatus, SB_SETTEXT, (WPARAM)1, (LPARAM) str);
+}
+//////////////////////////////////////////////////////////////////////
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	static OPENFILENAME file;
+
+//################################################################################
+
+  static int n, sx, sy;
+  static HWND hEdit, hWndToolBar, hWndStatusBar;
+  RECT rt;
+  int m, k, aWidths[2];
+  static TCHAR name[256];
+  char szText[0x7fff];
+  std::ifstream in;
+  std::ofstream out;
+switch (message)
+	{
+ case WM_CREATE:
+   hWndToolBar = CreateToolbarEx(hWnd, WS_CHILD|WS_VISIBLE|CCS_TOP,
+   2, 0, HINST_COMMCTRL, IDB_STD_SMALL_COLOR, tbb, 3, 0, 0, 0, 0,
+   sizeof(TBBUTTON));
+   hEdit = CreateWindow(WC_EDIT,NULL,WS_CHILD|WS_VISIBLE|WS_HSCROLL|
+         WS_VSCROLL|ES_LEFT|ES_MULTILINE|ES_AUTOHSCROLL|ES_AUTOVSCROLL,
+         0, 0, 0, 0, hWnd, (HMENU) 1, hInst, NULL);
+   file.lStructSize	= sizeof(OPENFILENAME);
+   file.hInstance	= hInst;
+   file.lpstrFilter	= _T("Text\0 *.txt\0Bce файлы\0 *.*");
+   file.lpstrFile	= name;
+   file.nMaxFile	= 256;
+   file.lpstrInitialDir = _T(".\\");
+   file.lpstrDefExt	= _T("txt");
+   hWndStatusBar = CreateWindow(STATUSCLASSNAME, NULL, WS_CHILD |
+                   WS_VISIBLE, 0, 0, 0, 0, hWnd, NULL, hInst, NULL);
+   break;
+ case WM_SIZE:
+   sx = LOWORD (lParam);
+   sy = HIWORD(lParam);
+   aWidths[0] = 100;
+   aWidths[1] = sx;
+   GetWindowRect(hWndToolBar, &rt);
+   m = rt.bottom - rt.top;
+   SendMessage(hWndToolBar, TB_AUTOSIZE, 0, 0);
+   GetWindowRect(hWndStatusBar, &rt);
+   k = rt.bottom - rt.top;
+   MoveWindow(hWndStatusBar, 0, sy - k, sx, sy, TRUE);
+   SendMessage(hWndStatusBar, SB_SETPARTS, (WPARAM)2, (LPARAM)aWidths);
+   StatusOut(hWndStatusBar, n, name);
+   MoveWindow(hEdit, 0, m, sx, sy - m - k, TRUE);
+   UpdateWindow(hEdit);
+   SetFocus(hEdit);
+   return 0;
+
+	case WM_COMMAND:
+   switch (LOWORD(wParam))
+   {
+   case ID_FILE_NEW:
+   szText[0] = '\0';
+   SetWindowTextA(hEdit, szText);
+   StatusOut(hWndStatusBar, 0, _T(""));
+   break;
+ case ID_FILE_OPEN:
+   file.lpstrTitle = _T("Открыть файл для чтения");
+   file.Flags = OFN_HIDEREADONLY;
+   if (!GetOpenFileName(&file)) return 1;
+   in.open(name, std::ios::binary);
+   in.read(szText, 0x7fff);
+   if ((m = in.gcount()) == 0x7fff)
+      {
+        MessageBox(hWnd, _T("Слишком большой файл"),
+                      _T("Edit"),MB_OK | MB_ICONSTOP);
+        in.close();
+        return 0;
+      }
+   szText[m] = '\0';
+   in.close();
+   SetWindowTextA(hEdit, szText);
+   n = SendMessage(hEdit, EM_GETLINECOUNT, 0, 0);
+   StatusOut(hWndStatusBar, n, name);
+   break;
+ case ID_FILE_SAVE:
+   file.lpstrTitle = _T("Открыть файл для записи");
+   file.Flags = OFN_NOTESTFILECREATE | OFN_HIDEREADONLY;
+   if (!GetSaveFileName(&file)) return 1;
+   out.open(name, std::ios::binary);
+   m = GetWindowTextA(hEdit, szText, 0x7fff);
+   out.write(szText, m);
+   out.close();
+   n = SendMessage(hEdit, EM_GETLINECOUNT, 0, 0);
+   StatusOut(hWndStatusBar, n, name);
+   break;
+ case IDM_EXIT: DestroyWindow(hWnd); break;
+ default: return DefWindowProc(hWnd, message, wParam, lParam);
+ }
+ break;
+
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default: return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}

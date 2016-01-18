@@ -1,0 +1,51 @@
+﻿//Листинг 6.3. Измерение времени выполнения потока
+
+#include "process.h"
+unsigned __stdcall MyThread(void* param)
+{
+for (int i = 0; i < 10000000; i++); return 0;
+}
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   HANDLE hThread;
+   LARGE_INTEGER Create, Exit, kernel, user;
+   static __int64 kernelTime, userTime, totalTime;
+   TCHAR str[256];
+   RECT rt;
+   switch (message)
+   {
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+	  case ID_THREAD:
+         hThread = (HANDLE) _beginthreadex(NULL,0,MyThread,NULL,0,NULL);
+		 WaitForSingleObject(hThread, INFINITE);
+         GetThreadTimes(hThread, (FILETIME *)&Create.u,
+         (FILETIME *)&Exit.u, (FILETIME *)&kernel.u, (FILETIME *)&user.u);
+         CloseHandle(hThread);
+         kernelTime = kernel.QuadPart;
+		 userTime = user.QuadPart;
+         totalTime = Exit.QuadPart - Create.QuadPart;
+         InvalidateRect(hWnd, NULL, TRUE);
+         break;
+
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_PAINT:
+      GetClientRect(hWnd, &rt);
+      hdc = BeginPaint(hWnd, &ps);
+      _stprintf(str, _T("kernelTime = %I64d\nuserTime = %I64d\ntotalTime\
+      = %I64d"), kernelTime, userTime, totalTime);
+      DrawText(hdc, str, _tcslen(str), &rt, DT_LEFT);
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}
+

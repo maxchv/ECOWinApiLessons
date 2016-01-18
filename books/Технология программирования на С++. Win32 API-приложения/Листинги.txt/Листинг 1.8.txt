@@ -1,0 +1,52 @@
+// Листинг 1.8. Синусоида
+
+#define _USE_MATH_DEFINES
+#include <cmath>
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   static int sx, sy;
+   static HPEN hpen1, hpen2;
+   int a, b, x_scr, y_scг; //Экранные координаты
+   double x, h; //Физические координаты
+   switch(message)
+   {
+   case WM_CREATE :
+      hpen1 = CreatePen(PS_SOLID, 2, RGB(0, 0, 255));
+      hpen2 = CreatePen(PS_SOLID, 2, RGB(255, 0, 0));
+      break;
+   case WM_SIZE:
+      sx = LOWORD(lParam); //Ширина окна
+      sy = HIWORD(lParam); //Высота окна
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      a = sx/2; // Координаты
+      b = sy/2; // центра окна
+
+      SelectObject(hdc, hpen1);	//Синее перо
+      MoveToEx(hdc, 0, b, NULL);
+      LineTo(hdc, sx, b);
+      MoveToEx(hdc, a, 0, NULL);
+      LineTo(hdc, a, sy);
+      MoveToEx(hdc, 0, b, NULL);
+      SelectObject(hdc,hpen2);	//Красное перо
+      h = 3*M_PI/a;				//Шаг по оси x
+      for (x = -M_PI, x_scr = 0; x < M_PI; x += h)
+      {
+         x_scr = (x + M_PI)*a/M_PI;
+         y_scг = b - b*sin(x);
+         LineTo (hdc, x_scr, y_scг) ;
+      }
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY:
+      DeleteObject(hpen1) ;
+      DeleteObject(hpen2) ;
+      PostQuitMessage(0) ;
+      break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

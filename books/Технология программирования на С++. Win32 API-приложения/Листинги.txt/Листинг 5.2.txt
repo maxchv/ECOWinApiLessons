@@ -1,0 +1,46 @@
+//Листинг 5.2. Пример неявного связывания DLL-библиотеки
+
+WINGDIAPI BOOL WINAPI Triangle (HDC, POINT*);
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   static HPEN hPen;
+   static int sx, sy;
+   POINT pt[3];
+   switch (message)
+   {
+   case WM_CREATE:
+     hPen = CreatePen(PS_SOLID, 4, RGB (0, 0, 255));
+     break;
+
+   case WM_SIZE:
+      sx = LOWORD(lParam);
+	  sy = HIWORD(lParam);
+	  break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam); }
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      SelectObject(hdc, hPen);
+	  pt[0].x = sx/4;
+	  pt[0].y = pt[1].y = sy/4;
+	  pt[1].x = sx*3/4;
+	  pt[2].x = sx/2;
+	  pt[2].y = sy/2;
+      Triangle(hdc, pt);
+      EndPaint(hWnd, &ps);
+	  break;
+   case WM_DESTROY:
+      DeleteObject(hPen);
+      PostQuitMessage(0);
+	  break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}
+ 

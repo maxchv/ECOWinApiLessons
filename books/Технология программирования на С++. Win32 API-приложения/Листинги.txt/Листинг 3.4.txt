@@ -1,0 +1,95 @@
+//Листинг 3.4. Тест общих элементов управления
+
+#include <commctrl.h>
+INT_PTR CALLBACK Dialog1 (HWND, UINT, WPARAM, LPARAM);
+static int spin, track, progress;
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+	lParam)
+{
+  PAINTSTRUCT ps;
+  HDC hdc;
+  TCHAR str[256];
+  RECT rt;
+  switch (message)
+  {
+   case WM_CREATE:
+   InitCommonControls();
+   break;
+  case WM_COMMAND:
+  switch (LOWORD(wParam))
+  {
+  case ID_COMMCTRL:
+    DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, Dialog1);
+    break;
+  case IDM_EXIT: DestroyWindow(hWnd); break;
+  default: return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+  break;
+ case WM_PAINT:
+   SetRect(&rt, 0, 0, 100, 100);
+   hdc = BeginPaint(hWnd, &ps);
+
+   _stprintf (str,_T("spin\t= %d\ntrack\t= %d\nprogress= %d"),
+             spin, track, progress);
+   DrawText(hdc, str,_tcslen(str), &rt, DT_LEFT |DT_EXPANDTABS);
+   EndPaint(hWnd, &ps);
+   break;
+  case WM_DESTROY: PostQuitMessage(0); break;
+  default: return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+  return 0;
+}
+///////////////////////////////////////////////////////////////////
+INT_PTR CALLBACK Dialog1(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
+	lParam)
+{
+ static int t, track;
+ static HWND hSpin, hBuddy, hTrack, hProgress;
+ switch (message)
+ {
+  case WM_INITDIALOG:
+     track = ::track;
+     SetDlgItemInt(hDlg, IDC_TR1, track, 0);
+     hTrack = GetDlgItem(hDlg, IDC_SLIDER1);
+     SendMessage (hTrack, TBM_SETRANGE, 0, 100<<16);
+     SendMessage(hTrack, TBM_SETPOS, TRUE, track);
+     hSpin = GetDlgItem(hDlg, IDC_SPIN1);
+     hBuddy = GetDlgItem(hDlg, IDC_SP1);
+     SendMessage(hSpin, UDM_SETBUDDY, (WPARAM)hBuddy, 0);
+     SendMessage(hSpin, UDM_SETRANGE, 0, 100);
+     SendMessage(hSpin, UDM_SETPOS, 0, spin);
+     hProgress = GetDlgItem(hDlg, IDC_PROGRESS1);
+     SendMessage(hProgress, PBM_SETRANGE, 0, 100<<16);
+     SendMessage(hProgress, PBM_SETSTEP, 1, 0);
+     SendMessage(hProgress, PBM_SETPOS, t, 0);
+     SetTimer(hDlg, 1, 100, NULL);
+     return TRUE;
+  case WM_TIMER :
+     if (++t > 99) t = 0;
+     SendMessage(hProgress, PBM_SETPOS, t, 0);
+     return TRUE;
+  case WM_HSCROLL:
+   track = LOWORD(SendMessage(hTrack, TBM_GETPOS, 0, 0));
+   SetDlgItemInt(hDlg, IDC_TR1, track, 0);
+   return TRUE;
+
+  case WM_COMMAND:
+   switch(LOWORD(wParam))
+   {
+   case IDOK :
+    progress = t;
+    ::track = track;
+    spin = SendMessage(hSpin, UDM_GETPOS, 0, 0);
+    InvalidateRect(GetParent(hDlg),NULL,1);
+   case IDCANCEL:
+    KillTimer(hDlg, 1);
+    EndDialog(hDlg, 0);
+    return TRUE;
+  default: return FALSE;
+  }
+  default: return FALSE;
+ }
+ return FALSE;
+}
+
+

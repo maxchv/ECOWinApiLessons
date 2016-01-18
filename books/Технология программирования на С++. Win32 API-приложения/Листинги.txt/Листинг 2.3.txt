@@ -1,0 +1,184 @@
+// Листинг 2.3. Окончательный вариант оконной функции программы просмотра файлов
+
+/*Для успещной компиляции необходимо подключить к проекту библиотеку, в которой находится тело функции createToolbarEx().
+ Откроем окно свойств проекта, в диалоговом окне Solution Explorer, На подложке
+Linker | Input в окне редактирования Additional Dependencies добавляем к списку
+библиотечных файлов comctl32.lib.
+*/
+
+#include <commdlg.h>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <commctrl.h>
+TBBUTTON tbb[] =
+{
+{STD_FILENEW, ID_FILE_NEW, TBSTATE_ENABLED, TBSTYLE_BUTTON,0,0,0,0},
+{STD_FILEOPEN, ID_FILE_OPEN,TBSTATE_ENABLED, TBSTYLE_BUTTON, 0,0,0,0},
+{STD_FILESAVE, ID_FILE_SAVE,TBSTATE_ENABLED, TBSTYLE_BUTTON,0,0,0,0}
+};
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+    static TCHAR name[256] = _T("");;
+	static OPENFILENAME file;
+	std::ifstream in;
+	std::ofstream out;
+	static std::vector<std::string> v;
+	std::vector<std::string>::iterator it;
+ 	std::string st;
+ 	int y, k;
+ 	static int n,length,sx,sy,cx,iVscrollPos,iHscrollPos,COUNT,MAX_WIDTH;
+ 	static SIZE size = {8, 16}; //Ширина и высота символа
+	static HWND hWndToolBar;
+	static int size_Toolbar;
+    RECT rt;
+	static LOGFONT lf;
+	static CHOOSEFONT cf;
+	static HFONT hfont;
+	TEXTMETRIC tm;
+	switch (message)
+ 	{
+ 	case WM_CREATE:
+	   file.lStructSize = sizeof(OPENFILENAME);
+       file.hInstance = hInst;
+	   file.lpstrFilter = _T("Text\0*.txt\0Все файлы\0 *.*");
+	   file.lpstrFile = name;
+	   file.nMaxFile = 256;
+	   file.lpstrInitialDir = _T(".\\");
+	   file.lpstrDefExt = _T("txt");
+       hWndToolBar = CreateToolbarEx(hWnd, WS_CHILD|WS_VISIBLE|CCS_TOP,1,0,
+       HINST_COMMCTRL,IDB_STD_SMALL_COLOR,tbb,3,0,0,0,0,sizeof(TBBUTTON));
+	   cf.lStructSize = sizeof(CHOOSEFONT);
+	   cf.Flags = CF_EFFECTS | CF_INITTOLOGFONTSTRUCT | CF_SCREENFONTS;
+	   cf.hwndOwner = hWnd;
+	   cf.lpLogFont = &lf;
+       break;
+ 	case WM_SIZE:
+ 	   sx = LOWORD(lParam);
+ 	   sy = HIWORD(lParam);
+	   k = n - (sy - size_Toolbar)/size.cy;
+	   if (k > 0) COUNT = k; else COUNT = iVscrollPos = 0;
+	   SetScrollRange(hWnd, SB_VERT, 0, COUNT, FALSE);
+	   SetScrollPos (hWnd, SB_VERT, iVscrollPos, TRUE);
+	   k = length - sx/size.cx;
+	   if (k > 0) MAX_WIDTH = k; else MAX_WIDTH = iHscrollPos = 0;
+	   SetScrollRange(hWnd, SB_HORZ, 0, MAX_WIDTH, FALSE);
+	   SetScrollPos(hWnd, SB_HORZ, iHscrollPos, TRUE);
+	   SendMessage(hWndToolBar, TB_AUTOSIZE, 0, 0);
+	   GetWindowRect(hWndToolBar, &rt);
+       size_Toolbar = rt.bottom - rt.top;
+	   break;
+
+	case WM_MOUSEWHEEL:
+		iVscrollPos -= (short)HIWORD(wParam)/WHEEL_DELTA;
+		iVscrollPos = max(0, min(iVscrollPos, COUNT));
+		SetScrollPos(hWnd, SB_VERT, iVscrollPos, TRUE);
+		InvalidateRect(hWnd, NULL, TRUE);
+        break;
+    case WM_VSCROLL :
+      switch (LOWORD(wParam))
+	       {
+	        case SB_LINEUP   : iVscrollPos--; break; 
+    		case SB_LINEDOWN : iVscrollPos++; break;
+			case SB_PAGEUP   : iVscrollPos -= sy/size.cy; break;
+			case SB_PAGEDOWN : iVscrollPos += sy/size.cy; break;
+    		case SB_THUMBPOSITION : iVscrollPos = HIWORD(wParam); break;
+	       }
+	       iVscrollPos = max(0, min(iVscrollPos, COUNT));
+	       if (iVscrollPos != GetScrollPos(hWnd, SB_VERT))
+	       {
+		        SetScrollPos (hWnd, SB_VERT, iVscrollPos, TRUE);
+		        InvalidateRect(hWnd, NULL, TRUE);
+	       }
+      break;
+	  case WM_HSCROLL :
+	    switch (LOWORD(wParam))
+	       {
+	            case SB_LINEUP   : iHscrollPos--; break;
+	            case SB_LINEDOWN : iHscrollPos++; break;
+	            case SB_PAGEUP   : iHscrollPos -= 8; break;
+                case SB_PAGEDOWN : iHscrollPos += 8; break;
+	            case SB_THUMBPOSITION : iHscrollPos = HIWORD(wParam); break;
+	        }
+	        iHscrollPos = max(0, min(iHscrollPos, MAX_WIDTH));
+	        if (iHscrollPos != GetScrollPos(hWnd, SB_HORZ))
+	        {
+		        SetScrollPos (hWnd, SB_HORZ, iHscrollPos, TRUE);
+		        InvalidateRect(hWnd, NULL, TRUE);
+	        }
+       break;
+	   case WM_COMMAND:
+		 switch (LOWORD(wParam))
+		 {
+		  case ID_FILE_NEW :
+		    if (!v.empty()) std::vector<std::string>().swap(v);
+ 			n = length = 0;
+ 			SendMessage(hWnd, WM_SIZE, 0, sy << 16 | sx);
+ 			InvalidateRect(hWnd, NULL, TRUE);
+ 			break;
+ 		  case ID_FILE_OPEN :
+			 file.lpstrTitle = _T("Открыть файл для чтения");
+			 file.Flags = OFN_HIDEREADONLY;
+			 if (!GetOpenFileName(&file)) return 1;
+			 in.open(name);
+			 while (getline(in,st))
+			 {
+				if (length < st.length()) length = st.length();
+                v.push_back(st);
+ 			  }
+ 			  in.close();
+ 			  n = v.size();
+ 			  SendMessage(hWnd, WM_SIZE, 0, sy << 16 | sx);
+			  InvalidateRect(hWnd,NULL,1);
+ 			  break;
+ 		  case ID_FILE_SAVE :
+ 			  file.lpstrTitle = _T("Открыть файл для записи");
+ 			  file.Flags = OFN_NOTESTFILECREATE;
+ 			  if (!GetSaveFileName(&file)) return 1;
+ 			  out.open(name);
+ 			  for (it = v.begin(); it != v.end(); ++it) out << *it << '\n';
+ 			  out.close();
+			  break;
+		  case ID_FONT :
+			  if(ChooseFont(&cf))
+			  {
+				  if (hfont) DeleteObject(hfont);
+				  hfont = CreateFontIndirect(&lf);
+				  hdc = GetDC(hWnd);
+				  SelectObject(hdc, hfont);
+				  GetTextMetrics(hdc, &tm);
+				  size.cx = tm.tmAveCharWidth;
+				  size.cy = tm.tmHeight + tm.tmExternalLeading;
+				  ReleaseDC(hWnd, hdc);
+				  SendMessage(hWnd, WM_SIZE, 0, sy << 16 | sx);
+				  InvalidateRect(hWnd, NULL, TRUE);
+			   }
+			  break;
+		  case IDM_EXIT: DestroyWindow(hWnd); break;
+
+          default: return DefWindowProc(hWnd, message, wParam, lParam);
+	      }
+		  break;
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		if (hfont)
+		{ SelectObject(hdc, hfont);
+		SetTextColor(hdc, cf.rgbColors);
+		}
+		for (y = size_Toolbar, it = v.begin() + iVscrollPos;
+			  it!=v.end() && y < sy; ++it, y += size.cy)
+			  if (iHscrollPos < it->length())
+			    TabbedTextOutA(hdc, 0, y, it->data()+iHscrollPos,
+				          it->length()-iHscrollPos, 0, NULL, 0);
+		EndPaint(hWnd, &ps);
+		break;
+	case WM_DESTROY:
+	  if (hfont) DeleteObject(hfont);
+	   PostQuitMessage(0);
+	   break;
+	default: return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}

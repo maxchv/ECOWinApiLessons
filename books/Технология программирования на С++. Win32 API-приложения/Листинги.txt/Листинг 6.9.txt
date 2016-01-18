@@ -1,0 +1,31 @@
+//Листинг 6.9. Индикация номера экземпляра приложения
+
+#pragma data_seg("Shared")
+volatile int shared_var = 0;
+#pragma data_seg()
+#pragma comment(linker, "/Section:Shared,RWS")
+///////////////////////////////////////////////
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   TCHAR str[256], name[256];
+
+   switch (message)
+   {
+      case WM_CREATE:
+         shared_var++;
+         SendMessage(hWnd, WM_GETTEXT, 256, (LPARAM)name);
+         _stprintf(str, _T("%s - Экземпляр: %d"), name, shared_var);
+         SendMessage(hWnd, WM_SETTEXT, 0, (LPARAM)str);
+		 break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

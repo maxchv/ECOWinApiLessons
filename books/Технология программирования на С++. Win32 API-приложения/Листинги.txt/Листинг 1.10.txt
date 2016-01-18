@@ -1,0 +1,48 @@
+// Листинг 1.10. Тест для демонстрации кистей
+
+HBRUSH hbrush, h_brush[6];
+TCHAR *str = _T("сплошное заполнение");
+TCHAR *hstr[] = {_T("HS_BDIAGONAL - слева направо и снизу вверх"),
+	          _T("HS_CROSS - горизонтальная и вертикальная штриховка"),
+		_T("HS_DIAGCROSS - под углом в 45 градусов"),
+		_T("HS_FDIAGONAL - слева направо и сверху вниз"),
+		_T("HS_HORIZONTAL - горизонтальная штриховка"),
+		_T("HS_VERTICAL - вертикальная штриховка")};
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+       PAINTSTRUCT ps;
+       HDC hdc;
+       int i;
+       int nIndex[] = {HS_BDIAGONAL, HS_CROSS, HS_DIAGCROSS, HS_FDIAGONAL,
+                  HS_HORIZONTAL, HS_VERTICAL};
+      switch(message)
+      {
+      case WM_CREATE :
+
+      hbrush = CreateSolidBrush(RGB(255, 255, 0));
+      for (i = 0; i < 6; i++)
+      h_brush[i] = CreateHatchBrush(nIndex[i], RGB(0, 128, 0));
+        break;
+      case WM_PAINT:
+           hdc = BeginPaint(hWnd, &ps) ;
+           SelectObject(hdc, hbrush);
+           Ellipse(hdc, 1, 1, 40, 40);
+           TextOut(hdc, 50, 11, str, _tcsclen(str));
+           for (i =0; i < 6; i++)
+          {
+               SelectObject(hdc, h_brush[i]);
+               Rectangle(hdc, 1, 41+i*40, 40, 80+i*40);
+               TextOut(hdc, 50, 51+i*40, hstr[i], _tcsclen(hstr[i]));
+           }
+          EndPaint(hWnd, &ps);
+          break;
+      case WM_DESTROY:
+          DeleteObject(hbrush);
+          for (i = 0; i < 6; i++) DeleteObject(h_brush[i]);
+          PostQuitMessage(0);
+          break;
+     default : return DefWindowProc(hWnd, message, wParam, lParam);
+     }
+     return 0;
+}

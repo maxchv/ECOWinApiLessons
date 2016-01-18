@@ -1,0 +1,32 @@
+// Листинг 1.5. Оконная функция для таймера
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   static int t;
+   TCHAR s[10], str[20] = _T("Секунды: ");
+   switch(message)
+
+   {
+   case WM_CREATE :
+      SetTimer(hWnd, 1, 1000, NULL);
+      break;
+   case WM_TIMER :
+      t++;
+      InvalidateRect(hWnd, NULL, TRUE);
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      _tcscat(str+9, _itot(t, s, 10));
+      TextOut(hdc, 0, 0, str, _tcsclen(str));
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY:
+      KillTimer(hWnd, 1);
+      PostQuitMessage(0);
+      break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

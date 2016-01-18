@@ -1,0 +1,44 @@
+//Листинг 4.10. Создание метафайла в памяти для растрового изображения
+
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	PAINTSTRUCT ps;
+    HDC hdc, hdcMeta, memBit;
+    static HMETAFILE hmf ;
+    HBITMAP hBitmap;
+
+	BITMAP bm;
+    switch (message)
+    {
+    case WM_CREATE:
+       hdcMeta = CreateMetaFile(NULL);
+       hBitmap = LoadBitmap (hInst, MAKEINTRESOURCE(IDB_MOUSE));
+       GetObject(hBitmap, sizeof(bm), &bm);
+       hdc = GetDC(hWnd);
+       memBit = CreateCompatibleDC(hdc);
+       ReleaseDC(hWnd, hdc);
+       SelectObject(memBit, hBitmap);
+       BitBlt (hdcMeta, 0, 0, bm.bmWidth, bm.bmHeight, memBit,0,0, SRCCOPY);
+       hmf = CloseMetaFile(hdcMeta);
+       break;
+    case WM_COMMAND:
+       switch (LOWORD(wParam))
+       {
+       case IDM_EXIT: DestroyWindow(hWnd); break;
+       default: return DefWindowProc(hWnd, message, wParam, lParam);
+       }
+       break;
+    case WM_PAINT:
+       hdc = BeginPaint(hWnd, &ps);
+       PlayMetaFile(hdc, hmf);
+       EndPaint(hWnd, &ps);
+	   break;
+    case WM_DESTROY:
+       DeleteMetaFile(hmf);
+       PostQuitMessage(0);
+	   break;
+    default: return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}

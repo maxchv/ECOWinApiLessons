@@ -1,0 +1,90 @@
+//Листинг 4.5. Демонстрационная задача для функции PlgBlt()
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+   lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   RECT rt;
+   int i, x, y, p, q;
+   static int k;
+   static bool Capture;
+   static POINT pts[3];
+   static HDC memDC;
+   static HBITMAP hPicture;
+
+   static BITMAP bm;
+   static HPEN hPen;
+   switch (message)
+   {
+      case WM_CREATE:
+         hPicture = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SPOOK));
+         GetObject(hPicture, sizeof(bm), &bm);
+         hPen = CreatePen(PS_SOLID, 4, RGB(0, 0, 255));
+         GetClientRect(hWnd, &rt);
+         x = (rt.right - bm.bmWidth)/2;
+         y = (rt.bottom - bm.bmHeight)/2;
+         pts[0].x = pts[2].x = x;
+         pts[0].y = pts[1].y = y;
+         pts[1].x = x + bm.bmWidth;
+         pts[2].y = y + bm.bmHeight;
+         hdc = GetDC(hWnd);
+         memDC = CreateCompatibleDC(hdc);
+         SelectObject(memDC, hPicture);
+         ReleaseDC(hWnd, hdc);
+         break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_LBUTTONDOWN:
+      x = LOWORD(lParam);
+      y = HIWORD(lParam);
+      for (k = 0; k < 3; k++)
+      {
+         p = x - pts[k].x;
+         q = y - pts[k].y;
+         if (p*p + q*q < 16)
+         {
+            SetCapture(hWnd);
+            Capture = true;
+            return 0;
+         }
+      }
+      break;
+   case WM_MOUSEMOVE:
+      if (Capture)
+      {
+
+         pts[k].x = LOWORD(lParam);
+         pts[k].y = HIWORD(lParam);
+         InvalidateRect(hWnd, NULL, TRUE);
+      }
+      break;
+   case WM_LBUTTONUP:
+      if (Capture)
+      {
+         ReleaseCapture();
+         Capture = false;
+      }
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      PlgBlt(hdc, pts, memDC, 0, 0, bm.bmWidth, bm.bmHeight, 0, 0, 0);
+      SelectObject(hdc, (HPEN)hPen);
+      for (i = 0; i < 3; i++)
+         Ellipse(hdc, pts[i].x-4, pts[i].y-4, pts[i].x+4, pts[i].y+4);
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY:
+      DeleteDC(memDC);
+      DeleteObject(hPen);
+      PostQuitMessage(0);
+      break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

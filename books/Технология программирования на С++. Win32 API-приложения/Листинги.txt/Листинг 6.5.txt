@@ -1,0 +1,56 @@
+﻿//Листинг 6.5. Критическая секция для двух потоков
+
+
+#include <process.h>
+#include <fstream>
+#include <vector>
+#include <string>
+
+std::vector<std::string> v;
+CRITICAL_SECTION fs;
+unsigned __stdcall Thread(void* param)
+{
+   std::ifstream in;
+   std::string st;
+   EnterCriticalSection(&fs);
+   in.open(_T("readme.txt"));
+   while (getline(in, st)) v.push_back(st);
+   in.close();
+   LeaveCriticalSection(&fs);
+   InvalidateRect((HWND)param, NULL, TRUE);
+   return 0;
+}
+///////////////////////////////////////////////////////////////////////
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   HDC hdc;
+   PAINTSTRUCT ps;
+   std::vector<std::string>::iterator it;
+   int y;
+   static HANDLE hThread;
+   switch (message)
+   {
+   case WM_CREATE:
+      InitializeCriticalSection(&fs);
+      hThread = (HANDLE)_beginthreadex(NULL, 0, Thread, hWnd, 0, NULL);
+      break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+	  EnterCriticalSection(&fs);
+      for (y = 0, it = v.begin(); it < v.end(); ++it, y += 16)
+         TabbedTextOutA(hdc, 0, y, it->data(), it->length(), 0, NULL, 0);
+	  LeaveCriticalSection(&fs);
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}

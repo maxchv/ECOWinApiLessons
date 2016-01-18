@@ -1,0 +1,81 @@
+// Листинг 2.4. Организация чтения/записи файла в библиотеке API-функций
+
+
+#include <commdlg.h>
+const DWORD MaxLength = 0x7fff;
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+	static TCHAR name[256] = _T("");;
+	static OPENFILENAME file;
+	DWORD result;
+	static HANDLE hFile;
+	static char text[MaxLength];
+	static int sx, sy;
+	static DWORD nCharRead;
+	RECT rt;
+	switch (message)
+    {
+	case WM_CREATE:
+		file.lStructSize = sizeof(OPENFILENAME);
+		file.hInstance = hInst;
+		file.lpstrFilter = _T("Text\0*.txt\0Все файлы\0*.*");
+		file.lpstrFile = name;
+		file.nMaxFile = 256;
+		file.lpstrInitialDir = _T(".\\");
+		file.lpstrDefExt = _T("txt");
+		break;
+	case WM_SIZE:
+		sx = LOWORD(lParam);
+		sy = HIWORD(lParam);
+
+		break;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{ 
+		case ID_FILE_NEW :
+			nCharRead = 0;
+			InvalidateRect(hWnd, NULL, TRUE);
+			break;
+		case ID_FILE_OPEN :
+			file.lpstrTitle = _T("Открыть файл для чтения");
+			file.Flags = OFN_HIDEREADONLY;
+			if (!GetOpenFileName(&file)) return 1;
+			hFile = CreateFile(name, GENERIC_READ, 0, NULL,
+				OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+			ReadFile(hFile, text, MaxLength, &nCharRead, NULL);
+			CloseHandle(hFile);
+			if (nCharRead == MaxLength)
+			{
+				MessageBox(hWnd, _T("Слишком большой файл"),
+				_T("Неудачное открытие файла"), MB_YESNO | MB_ICONHAND);
+				return 0;
+			}
+			InvalidateRect(hWnd, NULL, TRUE);
+			break;
+		case ID_FILE_SAVE :
+			file.lpstrTitle = _T("Открыть файл для записи");
+			file.Flags = OFN_NOTESTFILECREATE;
+			if (!GetOpenFileName(&file)) return 1;
+			hFile = CreateFile(name, GENERIC_WRITE, 0, NULL,
+				CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+			WriteFile(hFile, text, nCharRead, &result, NULL);
+			CloseHandle(hFile);
+			break;
+		case IDM_EXIT:	DestroyWindow(hWnd); break;
+		default: return DefWindowProc(hWnd, message, wParam, lParam);
+		} 
+		break; 
+	case WM_PAINT: 
+		hdc = BeginPaint(hWnd, &ps); 
+		SetRect(&rt, 0, 0, sx, sy);
+		DrawTextA(hdc, text, nCharRead, &rt, DT_LEFT);
+		EndPaint(hWnd, &ps); 
+		break;
+
+	case WM_DESTROY: PostQuitMessage(0); break;
+	default: return DefWindowProc(hWnd, message, wParam, lParam);
+	} 
+	return 0; 
+} 

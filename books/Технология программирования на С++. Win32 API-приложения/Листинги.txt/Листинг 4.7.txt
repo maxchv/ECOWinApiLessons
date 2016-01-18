@@ -1,0 +1,62 @@
+//Листинг 4.7. Демонстрация вращения графического образа
+
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+TCHAR *text = _T("Масяня");
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+	lParam)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+   static int x, y, cx, cy;
+   static double angle;
+   static HDC memBit;
+   static HBITMAP hBitmap;
+   static BITMAP bm;
+   static XFORM xf;
+   switch (message)
+   {
+   case WM_CREATE:
+      hBitmap = (HBITMAP)LoadImage(NULL, _T("mas1.bmp"), IMAGE_BITMAP, 0,
+
+         0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+      GetObject(hBitmap, sizeof(bm), &bm);
+      hdc = GetDC(hWnd);
+      memBit = CreateCompatibleDC(hdc);
+      SelectObject(memBit, hBitmap);
+      ReleaseDC(hWnd, hdc);
+      break;
+   case WM_SIZE:
+      cx = LOWORD(lParam)/2; //Координаты центра окна
+      cy = HIWORD(lParam)/2;
+      xf.eDx = cx;    //Точка будет являться и новым началом
+      xf.eDy = cy;    //координат для графических функций
+      x = - bm.bmWidth/2;
+      y = - bm.bmHeight/2;
+      break;
+   case WM_LBUTTONDOWN: angle += M_PI*45.0/180.0;
+      InvalidateRect(hWnd, NULL, TRUE);
+      break;
+   case WM_PAINT:
+      xf.eM22 = xf.eM11 = cos(angle);
+      xf.eM12 = -(xf.eM21 = sin(angle));
+      hdc = BeginPaint (hWnd, &ps);
+      SetGraphicsMode(hdc, GM_ADVANCED);
+      SetWorldTransform(hdc, &xf);
+      TextOut(hdc,x+35, y-20, text, _tcsclen(text));
+      BitBlt(hdc, x, y, bm.bmWidth, bm.bmHeight, memBit, 0, 0, SRCCOPY);
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

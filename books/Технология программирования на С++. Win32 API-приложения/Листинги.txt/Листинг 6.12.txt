@@ -1,0 +1,41 @@
+//Листинг 6. 12. Чтение данных из проецируемой области памяти
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   static HANDLE hFileMemory;
+   static int *p;
+   int x, y, *q;
+   TCHAR str[10];
+   switch (message)
+   {
+   case WM_CREATE:
+      hFileMemory = OpenFileMapping(FILE_MAP_READ | FILE_MAP_WRITE,
+                             FALSE, _T("Shared"));
+      if (hFileMemory == NULL) DestroyWindow(hWnd);
+      else p = (int*)MapViewOfFile(hFileMemory, FILE_MAP_READ|
+                            FILE_MAP_WRITE, 0, 0, 0);
+      break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+      case WM_PAINT:
+        hdc = BeginPaint(hWnd, &ps);
+        for (y = 0, q = p; y < 300; y += 30)
+            for (x = 0; x < 300; x += 30, q++)
+            {
+               _itot(*q, str, 10);
+               TextOut(hdc, x, y, str, _tcslen(str));
+            }
+         EndPaint(hWnd, &ps);
+         break;
+      case WM_DESTROY: PostQuitMessage(0); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

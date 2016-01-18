@@ -1,0 +1,53 @@
+//Листинг 4.6. Тест для функции MaskBlt()
+
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+   lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+   static int x, y;
+   static HDC memDC;
+   static HBITMAP hSmokes, hNo;
+   static BITMAP bm;
+   switch (message)
+   {
+   case WM_CREATE:
+      hNo = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_NO));
+      hSmokes = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_SMOKES));
+      GetObject(hSmokes, sizeof(bm), &bm);
+      hdc = GetDC(hWnd);
+      memDC = CreateCompatibleDC(hdc);
+
+      SelectObject(memDC, hSmokes);
+      ReleaseDC(hWnd, hdc);
+      break;
+   case WM_SIZE:
+      x = (LOWORD(lParam) - bm.bmWidth)/2;
+      y = (HIWORD(lParam) - bm.bmHeight)/2;
+      break;
+   case WM_LBUTTONDOWN:
+      hdc = GetDC(hWnd);
+      MaskBlt(hdc,x,y,bm.bmWidth,bm.bmHeight,memDC,0,0,hNo,0,0,SRCCOPY);
+      ReleaseDC(hWnd, hdc);
+      break;
+   case WM_LBUTTONUP:
+      InvalidateRect(hWnd, NULL, TRUE);
+      break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      BitBlt(hdc, x, y, bm.bmWidth, bm.bmHeight, memDC, 0, 0, SRCCOPY);
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

@@ -1,0 +1,33 @@
+//Листинг 6.13. Передача данных в сообщении WM_COPYDATA
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   static int *p;
+   int i, j, *q;
+   COPYDATASTRUCT cds;
+   switch (message)
+   {
+   case WM_CREATE:
+      p = new int [100];
+      for (i = 1, q = p; i <= 10; i++)
+         for (j = 1; j <= 10; j++, q++) *q = i*j;
+      break;
+
+   case WM_COMMAND:
+      switch (LOWORD (wParam))
+      {
+      case ID_SEND:
+         cds.cbData = 100*sizeof(int);
+         cds.lpData = p;
+         SendMessage (FindWindow (NULL, _T("Acceptor")), WM_COPYDATA, 0,
+                               (LPARAM)&cds);
+         break;
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

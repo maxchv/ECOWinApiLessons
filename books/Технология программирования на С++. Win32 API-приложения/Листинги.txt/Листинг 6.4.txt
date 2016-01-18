@@ -1,0 +1,45 @@
+﻿//Листинг 6.4. Тест для высокоточного измерения временного интервала
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc;
+
+   TCHAR str [60], tmp[20];
+   int i, sum;
+   LARGE_INTEGER frequency, Start, End;
+   static __int64 totalTime;
+   switch (message)
+   {
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case ID_CYCLE:
+         QueryPerformanceFrequency(&frequency);
+         Sleep(0);
+         QueryPerformanceCounter(&Start);
+         // Измеряемый код
+         for (i = sum = 0; i < 1000; i++) sum += i;
+         //////////////////////////////////////////
+         QueryPerformanceCounter(&End);
+         totalTime = (End.QuadPart - Start.QuadPart)*1000000/
+			          frequency.QuadPart;
+         InvalidateRect(hWnd, NULL, TRUE);
+		 break;
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+	  }
+   break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      _tcscpy(str, _T("Время работы цикла в мкс: "));
+	  _i64tot(totalTime, tmp, 10);
+	  _tcscat(str, tmp);
+      TextOut(hdc, 0, 0, str, _tcslen(str));
+      EndPaint(hWnd, &ps);
+	  break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

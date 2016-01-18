@@ -1,0 +1,102 @@
+// Листинг 3.5. Окно редактирования и список
+
+#include <vector>
+#include <xstring>
+#include <commctrl.h>
+INT_PTR CALLBACK Dialog1(HWND, UINT, WPARAM, LPARAM);
+typedef std::basic_string<TCHAR, std::char_traits<TCHAR>,
+std::allocator<TCHAR> > String;
+std::vector<String> v;
+HWND hWndStatusBar;	//Дескриптор строки состояния
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+	lParam)
+{ 
+	PAINTSTRUCT ps;
+	HDC hdc;
+        TEXTMETRIC tm;
+        static int cy, sx, sy;
+        int y;
+        RECT rt;
+        std::vector<String>::iterator it;
+        switch (message)
+        {
+        case WM_CREATE:
+           hdc = GetDC(hWnd);
+           GetTextMetrics(hdc, &tm);
+           cy = tm.tmHeight + tm.tmExternalLeading;
+
+           ReleaseDC(hWnd, hdc);
+           hWndStatusBar = CreateStatusWindow(WS_CHILD | WS_VISIBLE |
+           WS_CLIPSIBLINGS | CCS_BOTTOM | SBARS_SIZEGRIP,_T("Ready"), hWnd, 1);
+           break;
+        case WM_SIZE:
+           sx = LOWORD(lParam);
+           sy = HIWORD(lParam);
+           GetWindowRect(hWndStatusBar, &rt);
+           y = rt.bottom-rt.top;
+           MoveWindow(hWndStatusBar, 0, sy - y, sx, sy, TRUE);
+           break;
+        case WM_COMMAND:
+           switch (LOWORD(wParam))
+           {
+           case ID_DIALOG_READLISTBOX:
+              DialogBox(hInst, MAKEINTRESOURCE(IDD_READ), hWnd, Dialog1);
+              break;
+           case IDM_EXIT: DestroyWindow(hWnd); break;
+           default: return DefWindowProc(hWnd, message, wParam, lParam);
+           }
+           break;
+        case WM_PAINT:
+           hdc = BeginPaint(hWnd, &ps);
+              for (y = 0, it = v.begin(); it != v.end(); ++it, y += cy)
+                 TextOut(hdc, 0, y, it->data(), it->size());
+           EndPaint(hWnd, &ps);
+           break;
+        case WM_DESTROY: PostQuitMessage(0); break;
+        default: return DefWindowProc(hWnd, message, wParam, lParam);
+        }
+        return 0;
+}
+//////////////////////////////////////////////////////////////////////
+INT_PTR CALLBACK Dialog1(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   static HWND hList, hEdit;
+   TCHAR text[256];
+   int i, k;
+   switch (message)
+   {
+      case WM_INITDIALOG:
+           hList = GetDlgItem(hDlg, IDC_LIST1);
+
+           hEdit = GetDlgItem(hDlg, IDC_EDIT1);
+           return TRUE;
+      case WM_COMMAND:
+         switch (LOWORD(wParam))
+         {
+         case IDC_ADD:
+            GetDlgItemText(hDlg, IDC_EDIT1, text, 256);
+            SetDlgItemText(hDlg, IDC_EDIT1, _T(""));
+            SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)text);
+            SetFocus(hEdit);
+            return TRUE;
+		case IDC_DEL:
+         k = SendMessage(hList, LB_GETCURSEL, 0, 0);
+         SendMessage(hList, LB_DELETESTRING , (WPARAM)k, 0);
+         return TRUE;
+      case ID_OK:
+         v.clear();
+         k = SendMessage(hList, LB_GETCOUNT, 0, 0);
+         for (i = 0; i < k; i++)
+         {
+            SendMessage(hList, LB_GETTEXT, (WPARAM)i, (LPARAM)text);
+            v.push_back(text);
+		}
+         InvalidateRect(GetParent(hDlg), NULL, 1);
+         _stprintf(text,_T("Список: %d строк"), k);
+         SendMessage(hWndStatusBar, WM_SETTEXT, 0, (LPARAM)text);
+      case WM_DESTROY: EndDialog(hDlg, LOWORD(wParam)); return TRUE;
+      }
+      default: return FALSE;
+    }
+     return FALSE;
+}

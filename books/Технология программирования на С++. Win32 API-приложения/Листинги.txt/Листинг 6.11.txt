@@ -1,0 +1,35 @@
+//Листинг 6.11. Запись данных в проецируемую область памяти
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   static HANDLE hFileMemory;
+   static int *p;
+   int i, j, *q;
+   switch (message)
+   {
+   case WM_CREATE:
+      hFileMemory = CreateFileMapping(INVALID_HANDLE_VALUE, NULL,
+                      PAGE_READWRITE, 0, 4096, _T("Shared"));
+      if (hFileMemory == NULL)
+
+         {
+            DestroyWindow(hWnd);
+            break;
+         }
+      p=(int*)MapViewOfFile(hFileMemory, FILE_MAP_READ | FILE_MAP_WRITE, 0,
+                            0, 0);
+      for (i = 1, q = p; i <= 10; i++)
+         for (j = 1; j <= 10; j++, q++) *q = i*j;
+      break;
+   case WM_COMMAND:
+      switch (LOWORD (wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_DESTROY: PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

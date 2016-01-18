@@ -1,0 +1,59 @@
+//Листинг 4.9. Создание метафайла в памяти
+
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc, hdcMetafile;
+   static HMETAFILE hmf;
+   static int sx, sy;
+   int x, y;
+   double angle;
+   switch (message)
+   {
+   case WM_CREATE:
+      hdcMetafile = CreateMetaFile(NULL);
+      for (x = y = 50, angle = 0.0; angle < 2*M_PI; angle += 0.1)
+      {
+         MoveToEx(hdcMetafile, x, y, NULL);
+         x = int(50.0*cos(angle)*sin(angle*4.0)+50.5);
+         y = int(50.0*sin(angle)*sin(angle*4.0)+50.5);
+         LineTo(hdcMetafile, x, y);
+      }
+      hmf = CloseMetaFile(hdcMetafile);
+      break;
+   case WM_SIZE:
+      sx = LOWORD(lParam);
+      sy = HIWORD(lParam);
+      break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+      SetMapMode(hdc, MM_ANISOTROPIC);
+      SetWindowExtEx(hdc, 1000, 1000, NULL);
+      SetViewportExtEx(hdc, sx, sy, NULL);
+      for(x = 0; x < 5; x++)
+
+      for(y = 0; y < 5; y++)
+         {
+            SetWindowOrgEx(hdc, -200 * x, -200 * y, NULL);
+            PlayMetaFile(hdc, hmf);
+         }
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY:
+      DeleteMetaFile(hmf);
+      PostQuitMessage(0); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}
+

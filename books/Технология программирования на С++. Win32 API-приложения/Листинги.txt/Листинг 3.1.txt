@@ -1,0 +1,118 @@
+//Листинг 3.1. Крестики-нолики
+
+//
+LRESULT CALLBACK	ChildProc(HWND, UINT, WPARAM, LPARAM);
+TCHAR ChildClassName[MAX_LOADSTRING] = _T("WinChild");
+ATOM MyRegisterChildClass()
+{
+	WNDCLASSEX wcex  = { 0 };
+	wcex.cbSize      = sizeof(WNDCLASSEX);
+	wcex.lpfnWndProc = ChildProc;
+	wcex.hInstance   = hInst;
+	wcex.hCursor     = LoadCursor(NULL, IDC_ARROW);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+
+	wcex.lpszClassName = ChildClassName;
+	return RegisterClassEx(&wcex);
+}
+static HFONT newFont;
+static HWND hChild[9];
+unsigned char k[9] = { 0 };
+char text[] = { ' ', 'X', '0' };
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+	lParam)
+{ 
+	int i;
+	static int sx, sy;
+	switch (message)
+	{
+	case WM_CREATE:
+		MyRegisterChildClass();
+		for (i = 0; i < 9; i++)
+			hChild[i] = CreateWindow(ChildClassName, NULL, WS_CHILD |
+			WS_DLGFRAME | WS_VISIBLE, 0, 0, 0, 0, hWnd, NULL, hInst, NULL);
+		break;
+	case WM_SIZE:
+		if (wParam == SIZE_MINIMIZED) break; // Кнопка свертывания окна
+		sx = LOWORD(lParam)/3;        //Ширина дочернего окна
+		sy = HIWORD(lParam)/3;        //Высота дочернего окна
+		if (newFont) DeleteObject(newFont);
+		newFont = CreateFont(min(sx,sy), 0, 0, 0, FW_NORMAL, 0, 0, 0,
+		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, _T("Arial"));
+		for (i = 0; i < 9; i++)
+		  { MoveWindow(hChild[i],(i%3)*sx, (i/3)*sy, sx, sy, TRUE);
+		    UpdateWindow(hChild[i]);
+		  }
+      break;
+	case WM_COMMAND: 
+		switch (LOWORD(wParam))
+		{
+		case ID_NEW:
+			for (i = 0; i < 9; i++)
+			{
+				k[i] = 0;
+				InvalidateRect(hChild[i], NULL, 1);
+				UpdateWindow(hChild[i]);
+			}
+
+         break;
+		case IDM_EXIT: DestroyWindow(hWnd);	break;
+		default: return DefWindowProc(hWnd, message, wParam, lParam);
+		} 
+		break; 
+	case WM_DESTROY: PostQuitMessage(0); break;
+	default: return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
+///////////////////////////////////////////////////////////////////
+LRESULT CALLBACK ChildProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+	lParam)
+{ 
+   PAINTSTRUCT ps;
+   HDC hdc;
+   RECT rt;
+   int i, s;
+   char *ch;
+   switch (message)
+   {
+   case WM_LBUTTONDOWN :
+	   for (i = 0; hWnd != hChild[i]; i++);
+	   if (k[i]) break; else k[i] = 1;
+	   InvalidateRect(hWnd, NULL, 1);
+	   UpdateWindow(hWnd);
+	   srand(lParam);
+	   for (i = s = 0; i< 9; i++) if (k[i]) s++;
+	   if(s == 9) MessageBox(hWnd, _T("Для следующего сеанса выбирайте\
+		New"), _T("Конец игры"), MB_OK | MB_ICONQUESTION);
+	   else
+	   {
+		   while(true)
+		   { s = rand()*9/(RAND_MAX+1);
+		     if (k[s]) continue;
+			 k[s] = 2;
+             InvalidateRect(hChild[s], NULL, 1);
+			 UpdateWindow(hChild[s]);
+			 break;
+		   }
+	   }
+	   break;
+	case WM_PAINT:
+
+		for (i = 0; hWnd != hChild[i]; i++);
+		if(k[i])
+		{
+			ch = text+k[i];
+			hdc = BeginPaint(hWnd, &ps);
+			GetClientRect(hWnd, &rt);
+			SelectObject(hdc, newFont);
+			DrawTextA(hdc,ch,1,&rt,DT_SINGLELINE|DT_CENTER|DT_VCENTER);
+            EndPaint(hWnd, &ps);
+		}   //Фоновая закраска окна
+		else DefWindowProc(hWnd, message, wParam, lParam);
+		break;
+	default: return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}

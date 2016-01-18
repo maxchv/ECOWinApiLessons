@@ -1,0 +1,57 @@
+//Листинг 4.11. Расширенный метафайл в памяти
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+   PAINTSTRUCT ps;
+   HDC hdc, hdcEMF;
+   RECT rt;
+   static HENHMETAFILE hmf;
+   static int sx, sy;
+   int x, y;
+   double angle;
+   switch (message)
+
+   {
+   case WM_CREATE:
+      hdcEMF = CreateEnhMetaFile(NULL, NULL, NULL, NULL) ;
+      for (x = y = 50, angle = 0.0; angle < 2*M_PI; angle += 0.1)
+      {
+         MoveToEx(hdcEMF, x, y, NULL);
+         x = int(50.0*cos(angle)*sin(angle*4.0)+50.5);
+         y = int(50.0*sin(angle)*sin(angle*4.0)+50.5);
+         LineTo(hdcEMF, x, y);
+      }
+      hmf = CloseEnhMetaFile(hdcEMF);
+      break;
+   case WM_SIZE:
+      sx = LOWORD(lParam);
+      sy = HIWORD(lParam);
+      break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case IDM_EXIT: DestroyWindow(hWnd); break;
+      default: return DefWindowProc(hWnd, message, wParam, lParam);
+      }
+      break;
+   case WM_PAINT:
+      hdc = BeginPaint(hWnd, &ps);
+         for(rt.left = 0; rt.left < sx; rt.left += sx/5)
+            for(rt.top = 0; rt.top < sy; rt.top += sy/5)
+               {
+                  rt.right = rt.left + sx/5;
+                  rt.bottom = rt.top + sy/5;
+                  PlayEnhMetaFile(hdc, hmf, &rt);
+               }
+      EndPaint(hWnd, &ps);
+      break;
+   case WM_DESTROY:
+      DeleteEnhMetaFile(hmf);
+      PostQuitMessage(0);
+      break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+   return 0;
+}

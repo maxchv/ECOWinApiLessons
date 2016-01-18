@@ -1,0 +1,43 @@
+
+
+
+#include <commdlg.h>
+COLORREF stdColor = RGB(255,255,255);
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
+	 lParam)
+{
+   static CHOOSECOLOR ccs;
+   static COLORREF acrCustClr[16];
+   static HBRUSH hBrush;
+   switch (message)
+   {
+   case WM_CREATE:
+      ccs.lStructSize = sizeof(CHOOSECOLOR);
+      ccs.hwndOwner = hWnd;
+      ccs.rgbResult = stdColor;
+      ccs.Flags = CC_RGBINIT | CC_FULLOPEN;
+      ccs.lpCustColors = (LPDWORD)acrCustClr;
+      break;
+   case WM_COMMAND:
+      switch (LOWORD(wParam))
+      {
+      case ID_STDCOLOR:
+
+      if (ChooseColor(&ccs))
+      {
+         stdColor = ccs.rgbResult;
+         if (hBrush) DeleteObject(hBrush);
+         hBrush = CreateSolidBrush(stdColor);
+         SetClassLong(hWnd, GCL_HBRBACKGROUND, (LONG)hBrush);
+         InvalidateRect(hWnd, NULL, TRUE);
+	  }
+      break;
+   case IDM_EXIT: DestroyWindow (hWnd); break;
+   default: return DefWindowProc(hWnd, message, wParam, lParam) ;
+	  }
+   break;
+  case WM_DESTROY: PostQuitMessage(0); break;
+  default: return DefWindowProc(hWnd, message, wParam, lParam);
+   }
+  return 0;
+}

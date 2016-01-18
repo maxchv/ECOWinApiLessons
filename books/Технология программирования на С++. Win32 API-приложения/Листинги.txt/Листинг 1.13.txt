@@ -1,0 +1,38 @@
+// Листинг 1.13. Вывод числовых характеристик шрифта, заданного по умолчанию
+
+TCHAR *text = _T("Текст для вывода в окне");
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	PAINTSTRUCT ps;
+	HDC hdc;
+	TEXTMETRIC tm;
+	TCHAR str[256];
+	RECT rt;
+	SIZE size;
+	switch (message)
+	{
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		SetBkColor(hdc,RGB(255,255,0));		// Желтый фон
+		SetTextColor(hdc,RGB(0,0,128));		// Синий шрифт
+		TextOut(hdc, 0, 0, text, _tcsclen(text));
+		SetBkMode(hdc,TRANSPARENT);		// Прозрачный фон
+		SelectObject(hdc,GetStockObject(ANSI_VAR_FONT));
+		GetTextMetrics(hdc,&tm);
+		_stprintf(str, _T("tmHeight = %d\ntmInternalLeading = %d\ntmExternalLeading = %d\ntmAscent = %d\ntmDescent = %d\n"),
+			tm.tmHeight, tm.tmInternalLeading, tm.tmExternalLeading,
+			tm.tmAscent, tm.tmDescent);
+		SetRect(&rt, 0, 20, 150, 100);
+		DrawText(hdc, str, _tcslen(str), &rt, DT_LEFT);
+		GetTextExtentPoint32(hdc, text, _tcsclen(text), &size);
+		_stprintf(str,_T("Ширина строки = %d\nВысота строки = %d"),
+			size.cx, size.cy);
+		SetRect(&rt, 0, 100, 150, 150);
+		DrawText(hdc, str, _tcslen(str), &rt, DT_LEFT);
+		EndPaint(hWnd, &ps);
+		break;
+	case WM_DESTROY: PostQuitMessage(0); break;
+	default: return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
