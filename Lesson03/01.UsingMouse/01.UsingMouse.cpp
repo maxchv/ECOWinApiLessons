@@ -8,9 +8,9 @@
 using namespace std;
 
 #ifdef UNICODE
-#define SSTREAM wstringstream;
+	typedef wstringstream SSTREAM;
 #else
-#define SSTREAM stringstream;
+	typedef stringstream SSTREAM;
 #endif
 
 #define MAX_LOADSTRING 100
@@ -120,8 +120,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	return TRUE;
 }
 
-//SSTREAM buff;
-wstringstream buff;
+SSTREAM buff;
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -138,6 +137,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int x, y;
 	switch (message)
 	{
+	case WM_CREATE: // событие создания окна перед отображением
+	{
+		// получение текущего стиля
+		DWORD style = GetClassLong(hWnd, GCL_STYLE);
+		SetClassLong(hWnd, GCL_STYLE, style | CS_DBLCLKS);
+	}
+		break;
 	case WM_COMMAND:
 		break;
 	case WM_LBUTTONDOWN:
