@@ -1,4 +1,3 @@
-// Lesson04.cpp: определяет точку входа для консольного приложения.
 //
 
 #include "stdafx.h"
@@ -59,7 +58,7 @@ void ex01()
 
 	BOOL KillTimer(
 			HWND hwnd, // дескриптор окна, использующего таймер
-			UINT nID // идентификатор таймера
+			UINT nID   // идентификатор таймера
 		);
 	*/
 }
@@ -167,8 +166,6 @@ void ex03()
 	MAKEINTRESOURCE (make an integer into resource string):
 
 		#define MAKEINTRESOURCE(i)  (LPTSTR) ((DWORD) ((WORD) (i)))
-
-
 	*/
 
 	// Курсор.
