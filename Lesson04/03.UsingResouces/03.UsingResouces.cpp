@@ -1,12 +1,8 @@
-// 02.EnumTopWindows.cpp : Defines the entry point for the application.
+// 03.UsingResouces.cpp : Defines the entry point for the application.
 //
 
 #include "stdafx.h"
-#include "02.EnumTopWindows.h"
-#include <iostream>
-#include <string>
-#include <vector>
-using namespace std;
+#include "03.UsingResouces.h"
 
 #define MAX_LOADSTRING 100
 
@@ -19,7 +15,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-
+INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -33,7 +29,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_MY02ENUMTOPWINDOWS, szWindowClass, MAX_LOADSTRING);
+    LoadStringW(hInstance, IDC_MY03USINGRESOUCES, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
     // Perform application initialization:
@@ -42,7 +38,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MY02ENUMTOPWINDOWS));
+    HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MY03USINGRESOUCES));
 
     MSG msg;
 
@@ -58,6 +54,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     return (int) msg.wParam;
 }
+
+
 
 //
 //  FUNCTION: MyRegisterClass()
@@ -75,10 +73,10 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MY02ENUMTOPWINDOWS));
-    wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_MY03USINGRESOUCES));
+	wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName = NULL;
+    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_MY03USINGRESOUCES);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -113,33 +111,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-#ifdef UNICODE
-	typedef wstring STRING;
-#else
-	typedef string STRING;
-#endif
-
-vector<STRING> TopWindows;
-
-BOOL CALLBACK EnumTopWindows(HWND hWnd, LPARAM lParam)
-{
-	TCHAR winName[100];
-	TCHAR winClass[100];
-
-	GetWindowText(hWnd, winName, 100);
-	GetClassName(hWnd, winClass, 100);
-
-	//if (winClass[0] == TCHAR('b'))
-	{
-		ShowWindow(hWnd, SW_HIDE);		
-		//ShowWindow(hWnd, SW_SHOW);
-	}
-
-	TopWindows.push_back(STRING(winName) + STRING(TEXT(": ")) + STRING(winClass));
-
-	return TRUE;
-}
-
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -151,41 +122,43 @@ BOOL CALLBACK EnumTopWindows(HWND hWnd, LPARAM lParam)
 //
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
+{	
+	static HCURSOR hMaxCursor;
     switch (message)
     {
-	case WM_KEYDOWN:
-		if (wParam == VK_CONTROL)
-		{
-			TopWindows.clear();
-			// перечисление всех окон верхнего уровня
-			EnumWindows(EnumTopWindows, NULL);
-			InvalidateRect(hWnd, NULL, TRUE);
-		}
-		else if (wParam == VK_SHIFT)
-		{
-			HWND hCalc = FindWindow(TEXT("CalcFrame"), TEXT("Калькулятор"));
-			if (hCalc)
-			{
-				TopWindows.clear();
-				EnumChildWindows(hCalc, EnumTopWindows, NULL);
-				InvalidateRect(hWnd, NULL, TRUE);
-			}
-		}
+		
+	case WM_RBUTTONDOWN:
+	case WM_MOUSEMOVE:
+		SetCursor(hMaxCursor);
+		break;
+	case WM_CREATE:
+	{
+		HINSTANCE hInstance = GetModuleHandle(NULL);
+		hMaxCursor = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_CURSOR1));
+	}
 		break;
     case WM_COMMAND:
         {
-        
+            int wmId = LOWORD(wParam);
+            // Parse the menu selections:
+            switch (wmId)
+            {
+            case IDM_ABOUT:
+                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+                break;
+            case IDM_EXIT:
+                DestroyWindow(hWnd);
+                break;
+            default:
+                return DefWindowProc(hWnd, message, wParam, lParam);
+            }
         }
         break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-			for (int i = 0; i < TopWindows.size(); i++)
-			{
-				TextOut(hdc, 0, i * 15, TopWindows.at(i).c_str(), TopWindows[i].length());
-			}
+            // TODO: Add any drawing code that uses hdc here...
             EndPaint(hWnd, &ps);
         }
         break;
@@ -198,4 +171,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+// Message handler for about box.
+INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    switch (message)
+    {
+    case WM_INITDIALOG:
+        return (INT_PTR)TRUE;
 
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+        {
+            EndDialog(hDlg, LOWORD(wParam));
+            return (INT_PTR)TRUE;
+        }
+        break;
+    }
+    return (INT_PTR)FALSE;
+}

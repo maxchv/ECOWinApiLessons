@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01.UsingTimer", "01.UsingTi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02.EnumTopWindows", "02.EnumTopWindows\02.EnumTopWindows.vcxproj", "{4FD8B2BE-311B-452F-92E7-0CC637A2A9EE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03.UsingResouces", "03.UsingResouces\03.UsingResouces.vcxproj", "{6AFCD7D1-1225-45BE-96A2-426A3C0E8DB2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -39,6 +41,14 @@ Global
 		{4FD8B2BE-311B-452F-92E7-0CC637A2A9EE}.Release|Win32.Build.0 = Release|Win32
 		{4FD8B2BE-311B-452F-92E7-0CC637A2A9EE}.Release|x64.ActiveCfg = Release|x64
 		{4FD8B2BE-311B-452F-92E7-0CC637A2A9EE}.Release|x64.Build.0 = Release|x64
+		{6AFCD7D1-1225-45BE-96A2-426A3C0E8DB2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6AFCD7D1-1225-45BE-96A2-426A3C0E8DB2}.Debug|Win32.Build.0 = Debug|Win32
+		{6AFCD7D1-1225-45BE-96A2-426A3C0E8DB2}.Debug|x64.ActiveCfg = Debug|x64
+		{6AFCD7D1-1225-45BE-96A2-426A3C0E8DB2}.Debug|x64.Build.0 = Debug|x64
+		{6AFCD7D1-1225-45BE-96A2-426A3C0E8DB2}.Release|Win32.ActiveCfg = Release|Win32
+		{6AFCD7D1-1225-45BE-96A2-426A3C0E8DB2}.Release|Win32.Build.0 = Release|Win32
+		{6AFCD7D1-1225-45BE-96A2-426A3C0E8DB2}.Release|x64.ActiveCfg = Release|x64
+		{6AFCD7D1-1225-45BE-96A2-426A3C0E8DB2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

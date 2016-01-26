@@ -166,8 +166,6 @@ void ex03()
 	MAKEINTRESOURCE (make an integer into resource string):
 
 		#define MAKEINTRESOURCE(i)  (LPTSTR) ((DWORD) ((WORD) (i)))
-
-
 	*/
 
 	// Курсор.
