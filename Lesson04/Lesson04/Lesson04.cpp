@@ -1,7 +1,10 @@
 //
 
 #include "stdafx.h"
-
+#include <Windows.h>
+#include <iostream>
+#pragma warning(disable: 4996)
+using namespace std;
 // Повторение пройденного материала
 
 /*
@@ -213,20 +216,40 @@ void ex04()
 	Если GetLastError возвращает нулевое значение, это означает, что предшествующий
 	вызов функции Windows завершился успешно.
 	*/
-
+	FILE *f = fopen("somefile.txt", "r");
+	DWORD error = GetLastError();
+	if (error)
+	{
+		cout << "Error: " << error << endl;
+		LPVOID lpMsgBuf = NULL;
+		TCHAR szBuf[300];
+		//Функция FormatMessage форматирует строку сообщения
+		BOOL fOK = FormatMessage(
+			FORMAT_MESSAGE_FROM_SYSTEM	| FORMAT_MESSAGE_ALLOCATE_BUFFER, // необходимо выделить соответствующий 	блок памяти для хранения текста с описанием ошибки ,
+			NULL,
+			error,
+			MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // идентификатор языка, на 	котором выводится описание ошибки ,
+			(LPTSTR)&lpMsgBuf, // указатель на буфер, в который запишется текст с 	описанием ошибки ,
+			0, // память выделяет система
+			NULL // список аргументов форматирования
+			);
+		wsprintf(szBuf, TEXT("Ошибка %d: %s"), error, lpMsgBuf);
+		wcout << lpMsgBuf << endl;
+	}
 	/*
 	Для получения описания ошибки на основе кода ошибки существует  FormatMessage:
 
 	DWORD FormatMessage(
-		DWORD dwFlags, // набор битовых флагов, которые определяют различные   	// аспекты процесса форматирования, а также способ интерпретации      	// 2-го параметра lpSource
-		LPCVOID lpSource, // указатель на строку, содержащую сообщение об ошибке
-		DWORD dwMessageId, // код ошибки
-		DWORD dwLanguageId, // идентификатор языка, на котором выводится 		// описание ошибки
-		LPTSTR lpBuffer, // выходной буфер, который выделяется системой, если
-		// в 1-м параметре указан флаг FORMAT_MESSAGE_ALLOCATE_BUFFER
-		DWORD nSize, // число символов, записываемых в выходной буфер,
-		// либо минимальный размер выделяемого буфера, если
-		// в 1-м параметре указан флаг FORMAT_MESSAGE_ALLOCATE_BUFFER
+		DWORD dwFlags,      // набор битовых флагов, которые определяют различные   	// аспекты процесса форматирования, а также способ интерпретации      	// 2-го параметра lpSource
+		LPCVOID lpSource,   // указатель на строку, содержащую сообщение об ошибке
+		DWORD dwMessageId,  // код ошибки
+		DWORD dwLanguageId, // идентификатор языка, на котором выводится 		
+		                    // описание ошибки
+		LPTSTR lpBuffer,    // выходной буфер, который выделяется системой, если
+						    // в 1-м параметре указан флаг FORMAT_MESSAGE_ALLOCATE_BUFFER
+		DWORD nSize,        // число символов, записываемых в выходной буфер,
+					        // либо минимальный размер выделяемого буфера, если
+					        // в 1-м параметре указан флаг FORMAT_MESSAGE_ALLOCATE_BUFFER
 		va_list* Arguments // список аргументов форматирования
 	);
 
@@ -280,6 +303,7 @@ void ex04()
 
 int main(int argc, TCHAR* argv[])
 {
+	ex04();
 	return 0;
 }
 
