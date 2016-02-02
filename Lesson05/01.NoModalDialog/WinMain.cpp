@@ -4,9 +4,23 @@
 BOOL CALLBACK DialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DialogProc2(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+LRESULT CALLBACK GetMessageProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+	MSG *mes = reinterpret_cast<MSG*>(lParam);
+	switch (mes->message) {
+	case WM_KEYDOWN:
+		MessageBox(0, TEXT("KeyDown"), TEXT(""), MB_OK);
+		break;
+	}
+	return 0;
+}
+
 int APIENTRY WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszCmdOpt, int nShowOpt)
 {
-	return DialogBox(hThisInst, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DialogProc);
+	HHOOK hook = SetWindowsHookEx(WH_GETMESSAGE, GetMessageProc, NULL, GetCurrentThreadId());
+	int ret = DialogBox(hThisInst, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DialogProc);
+	UnhookWindowsHookEx(hook);
+	return ret;
 }
 
 HWND hStaticText;
