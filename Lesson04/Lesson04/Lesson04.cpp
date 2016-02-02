@@ -222,19 +222,20 @@ void ex04()
 	{
 		cout << "Error: " << error << endl;
 		LPVOID lpMsgBuf = NULL;
-		TCHAR szBuf[300];
+		TCHAR szBuf[300];		
 		//Функция FormatMessage форматирует строку сообщения
 		BOOL fOK = FormatMessage(
-			FORMAT_MESSAGE_FROM_SYSTEM	| FORMAT_MESSAGE_ALLOCATE_BUFFER, // необходимо выделить соответствующий 	блок памяти для хранения текста с описанием ошибки ,
+			FORMAT_MESSAGE_FROM_SYSTEM, 
 			NULL,
 			error,
-			MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // идентификатор языка, на 	котором выводится описание ошибки ,
-			(LPTSTR)&lpMsgBuf, // указатель на буфер, в который запишется текст с 	описанием ошибки ,
-			0, // память выделяет система
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // идентификатор языка, на 	котором выводится описание ошибки ,
+			szBuf, // указатель на буфер, в который запишется текст с 	описанием ошибки ,
+			299, // память выделяет система
 			NULL // список аргументов форматирования
 			);
-		wsprintf(szBuf, TEXT("Ошибка %d: %s"), error, lpMsgBuf);
-		wcout << lpMsgBuf << endl;
+		char buff[300]; 
+		AnsiToOem(szBuf, buff); // конвертирование в 866
+		cout << buff << endl;
 	}
 	/*
 	Для получения описания ошибки на основе кода ошибки существует  FormatMessage:
