@@ -1,6 +1,6 @@
 #include <Windows.h>
 #include "resource.h"
-
+#include <sstream>
 BOOL CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszCmpOpt, int nShowOpt)
@@ -19,11 +19,15 @@ int APIENTRY WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lps
 
 HWND hEdit;
 HWND hBtn;
+HWND hStatic;
+
+std::wstringstream sbuf;
 
 BOOL CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static bool isEnabled = false;
-	static POINT old_pt, cur_pt;
+
+	static int dx, dy;
 	static bool isClick = false;
 	switch (msg)
 	{
@@ -44,20 +48,29 @@ BOOL CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 	{		
 		isClick = true;
-		old_pt.x = LOWORD(lParam);
-		old_pt.y = HIWORD(lParam);
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
+		RECT rect;
+		GetWindowRect(hStatic, &rect);
+		dx = rect.left - x;
+		dy = rect.top - y;
 	}
 	return TRUE;
 	case WM_MOUSEMOVE:
 	{
 		if (isClick)
 		{
-			cur_pt.x = LOWORD(lParam);
-			cur_pt.y = HIWORD(lParam);
-			// переместить окно
+			int x = LOWORD(lParam);
+			int y = HIWORD(lParam);
 
-			old_pt.x = cur_pt.x;
-			old_pt.y = cur_pt.y;
+			RECT rect;
+			GetWindowRect(hStatic, &rect);
+			int height = rect.bottom - rect.top;
+			int width  = rect.right  - rect.left;
+			
+			MoveWindow(hStatic, 
+				       x + dx, y + dy, 
+				       width, height, TRUE);
 		}
 	}
 		return TRUE;
@@ -65,6 +78,7 @@ BOOL CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		isClick = false;
 		return TRUE;
 	case WM_INITDIALOG:
+		hStatic = GetDlgItem(hWnd, IDC_STATICMOVE);
 		hEdit = GetDlgItem(hWnd, IDC_EDITTEXT);
 		EnableWindow(hEdit, isEnabled);
 		hBtn = GetDlgItem(hWnd, IDC_BTNONOFF);
