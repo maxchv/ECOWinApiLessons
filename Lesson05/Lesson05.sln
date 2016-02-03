@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01.ModalDialog", "01.NoModa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02.NoModalDialog", "02.NoModalDialog\02.NoModalDialog.vcxproj", "{545F2A14-64C1-4984-8D90-E8E0A3E76841}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03.CreatWindow", "03.CreatWindow\03.CreatWindow.vcxproj", "{9EBDF712-26DB-4CF2-AA50-1B22837042C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -39,6 +41,14 @@ Global
 		{545F2A14-64C1-4984-8D90-E8E0A3E76841}.Release|Win32.Build.0 = Release|Win32
 		{545F2A14-64C1-4984-8D90-E8E0A3E76841}.Release|x64.ActiveCfg = Release|x64
 		{545F2A14-64C1-4984-8D90-E8E0A3E76841}.Release|x64.Build.0 = Release|x64
+		{9EBDF712-26DB-4CF2-AA50-1B22837042C1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9EBDF712-26DB-4CF2-AA50-1B22837042C1}.Debug|Win32.Build.0 = Debug|Win32
+		{9EBDF712-26DB-4CF2-AA50-1B22837042C1}.Debug|x64.ActiveCfg = Debug|x64
+		{9EBDF712-26DB-4CF2-AA50-1B22837042C1}.Debug|x64.Build.0 = Debug|x64
+		{9EBDF712-26DB-4CF2-AA50-1B22837042C1}.Release|Win32.ActiveCfg = Release|Win32
+		{9EBDF712-26DB-4CF2-AA50-1B22837042C1}.Release|Win32.Build.0 = Release|Win32
+		{9EBDF712-26DB-4CF2-AA50-1B22837042C1}.Release|x64.ActiveCfg = Release|x64
+		{9EBDF712-26DB-4CF2-AA50-1B22837042C1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

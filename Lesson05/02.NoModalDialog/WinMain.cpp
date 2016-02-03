@@ -1,6 +1,6 @@
 #include <Windows.h>
 #include "resource.h"
-
+#include <sstream>
 BOOL CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszCmpOpt, int nShowOpt)
@@ -19,12 +19,17 @@ int APIENTRY WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lps
 
 HWND hEdit;
 HWND hBtn;
+HWND hStatic;
+
+std::wstringstream sbuf;
 
 BOOL CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static bool isEnabled = false;
-	static POINT old_pt, cur_pt;
+	RECT rect;
+	static int dx, dy;
 	static bool isClick = false;
+
 	switch (msg)
 	{
 	case WM_COMMAND:
@@ -42,22 +47,46 @@ BOOL CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 		return TRUE;
 	case WM_LBUTTONDOWN:
-	{		
-		isClick = true;
-		old_pt.x = LOWORD(lParam);
-		old_pt.y = HIWORD(lParam);
+	{	
+		int x = LOWORD(lParam);
+		int y = HIWORD(lParam);
+
+		sbuf.str(TEXT(""));
+		sbuf << TEXT("x: ") << x << TEXT(" y: ") << y <<
+			TEXT(" dx: ") << dx << TEXT(" dy: ") << dy;
+
+		SetWindowText(hWnd, sbuf.str().data());
+		
+		GetWindowRect(hStatic, &rect);
+		dx = rect.left - x - 6;
+		dy = rect.top - y;
+
+		if (x > rect.left && x < rect.right && y > rect.top && y < rect.bottom)
+		{
+			isClick = true;
+		}
 	}
 	return TRUE;
 	case WM_MOUSEMOVE:
 	{
 		if (isClick)
 		{
-			cur_pt.x = LOWORD(lParam);
-			cur_pt.y = HIWORD(lParam);
-			// переместить окно
+			int x = LOWORD(lParam);
+			int y = HIWORD(lParam);
 
-			old_pt.x = cur_pt.x;
-			old_pt.y = cur_pt.y;
+			RECT rect;
+			GetWindowRect(hStatic, &rect);
+			int height = rect.bottom - rect.top;
+			int width  = rect.right  - rect.left;
+			
+			sbuf.str(TEXT(""));
+			sbuf << TEXT("x: ") << x << TEXT(" y: ") << y << std::endl <<
+				TEXT(" left: ") << rect.left << TEXT(" top: ") << rect.top;
+			SetWindowText(hStatic, sbuf.str().data());
+
+			MoveWindow(hStatic, 
+				       x + dx, y - dy, 
+				       width, height, TRUE);
 		}
 	}
 		return TRUE;
@@ -65,6 +94,8 @@ BOOL CALLBACK DlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		isClick = false;
 		return TRUE;
 	case WM_INITDIALOG:
+		hStatic = GetDlgItem(hWnd, IDC_STATICMOVE);
+		
 		hEdit = GetDlgItem(hWnd, IDC_EDITTEXT);
 		EnableWindow(hEdit, isEnabled);
 		hBtn = GetDlgItem(hWnd, IDC_BTNONOFF);
