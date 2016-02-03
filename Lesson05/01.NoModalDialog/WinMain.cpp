@@ -28,8 +28,21 @@ HWND hBtnSet;
 HWND hBtnGet;
 HWND hEdit;
 
+class Equation
+{
+	double first;
+	double second;
+	enum Op{PLUS, MINUS, DIVISION, MULTIPLE} op;
+	TCHAR strEq[255];
+
+};
+
 BOOL CALLBACK DialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	static double num1;
+	static double num2;
+	static TCHAR op;
+	
 	switch (msg)
 	{
 	case WM_INITDIALOG:
