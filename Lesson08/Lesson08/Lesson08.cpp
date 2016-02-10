@@ -40,20 +40,22 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/bb775456(v=vs.85).aspx
     Microsoft Visual Studio;
 •	посредством вызова функции CreateWindow
 
+	Класс EDIT
+
 Стили Edit Controls
-	
-	ES_AUTOHSCROLL		автоматический горизонтальный скроллбар
-	ES_AUTOVSCROLL		автоматический вертикальный скроллбар
-	ES_LEFT				позиционирование текста по левому краю
-	ES_CENTER			позиционирование текста по центру
-	ES_RIGHT			позиционирование по правому краю
-	ES_LOWERCASE		ввод строчными символами
-	ES_MULTILINE		многострочный текст
-	ES_NUMBER			ввод только цифр
-	ES_PASSWORD			ввод пароля
-	ES_READONLY			только для чтения
-	ES_WANTRETURN		позволяет вводит символ новой строки для 
-						многострочного текста
+    
+    ES_AUTOHSCROLL		автоматический горизонтальный скроллбар
+    ES_AUTOVSCROLL		автоматический вертикальный скроллбар
+    ES_LEFT				позиционирование текста по левому краю
+    ES_CENTER			позиционирование текста по центру
+    ES_RIGHT			позиционирование по правому краю
+    ES_LOWERCASE		ввод строчными символами
+    ES_MULTILINE		многострочный текст
+    ES_NUMBER			ввод только цифр
+    ES_PASSWORD			ввод пароля
+    ES_READONLY			только для чтения
+    ES_WANTRETURN		позволяет вводит символ новой строки для 
+                        многострочного текста
 
 https://msdn.microsoft.com/en-us/library/windows/desktop/bb775464(v=vs.85).aspx
 */
@@ -95,32 +97,32 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/bb775464(v=vs.85).aspx
   WM_UNDO		|	0		 |	0		 |	Отменить последнее действие 
   --------------+------------+-----------+------------------------------------------------------------------------
   WM_GETTEXT	|	nMax	 |	szBuffer |	Скопировать текст (не более nMax символов) из элемента управления 
-				|			 |			 |  в буфер szBuffer 
+                |			 |			 |  в буфер szBuffer 
   --------------+------------+-----------+------------------------------------------------------------------------
 */
 
 // Уведомления
 /*
-	При воздействии на элемент управления диалога (например, при вводе текста в Edit Control), 
-	в диалоговую/оконную процедуру поступает сообщение WM_COMMAND, в котором LOWORD(wParam) 
-	содержит идентификатор элемента управления, HIWORD(wParam) содержит код уведомления 
-	(например, EN_CHANGE), а lParam – дескриптор элемента управления.
+    При воздействии на элемент управления диалога (например, при вводе текста в Edit Control), 
+    в диалоговую/оконную процедуру поступает сообщение WM_COMMAND, в котором LOWORD(wParam) 
+    содержит идентификатор элемента управления, HIWORD(wParam) содержит код уведомления 
+    (например, EN_CHANGE), а lParam – дескриптор элемента управления.
 
-	Примеры уведомлений:
+    Примеры уведомлений:
 
-	EN_SETFOCUS		Окно получило фокус ввода
-	EN_KILLFOCUS	Окно потеряло фокус ввода
-	EN_UPDATE		Содержимое окна будет меняться
-	EN_CHANGE		Содержимое окна изменилось
-	EN ERRSPACE		Произошло переполнение буфера редактирования
+    EN_SETFOCUS		Окно получило фокус ввода
+    EN_KILLFOCUS	Окно потеряло фокус ввода
+    EN_UPDATE		Содержимое окна будет меняться
+    EN_CHANGE		Содержимое окна изменилось
+    EN ERRSPACE		Произошло переполнение буфера редактирования
 
-	https://msdn.microsoft.com/en-us/library/windows/desktop/ff485924(v=vs.85).aspx
-	
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ff485924(v=vs.85).aspx
+    
 */
 
 // Макросы
 /*
-	https://msdn.microsoft.com/en-us/library/windows/desktop/ff485922(v=vs.85).aspx
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ff485922(v=vs.85).aspx
 */
 
 // Пользовательские сообщения.
@@ -136,82 +138,82 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/bb775464(v=vs.85).aspx
     (#define WM_APP  0x8000);
 •	диапазон 0xC000 – 0xFFFF предназначен для строковых сообщений (такие сообщения 
     используются при работе с немодальными диалогами и их необходимо регистрировать 
-	с помощью функции API RegisterWindowMessage – об этом речь пойдёт в одном из 
-	следующих занятий);
+    с помощью функции API RegisterWindowMessage – об этом речь пойдёт в одном из 
+    следующих занятий);
 •	целочисленные значения, превышающие 0xFFFF, зарезервированы системой.
 */
 
 // Получение дескриптора родительского окна
 /*
-	GetParent(HWND hWnd)
+    GetParent(HWND hWnd)
 */
 
 // Задание текущих стилей элемента управления
 /*
-	LONG SetWindowLong(
-		HWND hWnd, // дескриптор окна
-		int nIndex, // индекс значения, которое нужно изменить
-		LONG dwNewLong // новое значение
-	);
+    LONG SetWindowLong(
+        HWND hWnd, // дескриптор окна
+        int nIndex, // индекс значения, которое нужно изменить
+        LONG dwNewLong // новое значение
+    );
 
-	Индекс:
-		GWL_EXSTYLE		Задает расширенный стиль окна.
-		GWL_HINSTANCE	Задает новый дескриптор приложения.
-		GWL_ID			Устанавливает новый идентификатор дочернего окна.
-		GWL_STYLE		Устанавливает новый стиль окна.
-		GWL_USERDATA	Устанавливает новые данный ассоциированные с окном.
-		GWL_WNDPROC		Задает новую диалоговую процедуру
+    Индекс:
+        GWL_EXSTYLE		Задает расширенный стиль окна.
+        GWL_HINSTANCE	Задает новый дескриптор приложения.
+        GWL_ID			Устанавливает новый идентификатор дочернего окна.
+        GWL_STYLE		Устанавливает новый стиль окна.
+        GWL_USERDATA	Устанавливает новые данный ассоциированные с окном.
+        GWL_WNDPROC		Задает новую диалоговую процедуру
 
-	https://msdn.microsoft.com/en-us/library/windows/desktop/ms633591%28v=vs.85%29.aspx
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ms633591%28v=vs.85%29.aspx
 */
 
 // Получение текущего стиля окна
 /*
-	LONG GetWindowLong(
-		HWND hWnd, // дескриптор окна
-		int nIndex // индекс значения, которое нужно выбрать
-	);
+    LONG GetWindowLong(
+        HWND hWnd, // дескриптор окна
+        int nIndex // индекс значения, которое нужно выбрать
+    );
 */
 
 
 // Переопределение оконной процедуры текстового поля
 /*
-		WNDPROC OriginalProc = NULL;
-		OriginalProc = (WNDPROC)SetWindowLong(hEdit, GWL_WNDPROC, LONG(EditProc));
-		LRESULT CALLBACK EditProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-		{
-			...
-			// Вызов стандартного обработчика сообщений
-			return CallWindowProc(OriginalProc, hWnd, message, wParam, lParam);
-		}
+        WNDPROC OriginalProc = NULL;
+        OriginalProc = (WNDPROC)SetWindowLong(hEdit, GWL_WNDPROC, LONG(EditProc));
+        LRESULT CALLBACK EditProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+        {
+            ...
+            // Вызов стандартного обработчика сообщений
+            return CallWindowProc(OriginalProc, hWnd, message, wParam, lParam);
+        }
 
 где функция CallWindowProc передаёт все сообщения на обработку стандартной оконной 
 процедуре:
 
-	LRESULT CallWindowProc(
-		WNDPROC lpPrevWndFunc,	// указатель на предыдущую (оригинальную) оконную                                                	// процедуру. Это значение возвращается функцией GetWindowLong.
-		HWND hWnd,				// дескриптор окна, получающего сообщение
-		UINT Msg,				// идентификатор сообщения
-		WPARAM wParam,			// дополнительная информация о сообщении
-		LPARAM lParam			// дополнительная информация о сообщении
-	);
+    LRESULT CallWindowProc(
+        WNDPROC lpPrevWndFunc,	// указатель на предыдущую (оригинальную) оконную                                                	// процедуру. Это значение возвращается функцией GetWindowLong.
+        HWND hWnd,				// дескриптор окна, получающего сообщение
+        UINT Msg,				// идентификатор сообщения
+        WPARAM wParam,			// дополнительная информация о сообщении
+        LPARAM lParam			// дополнительная информация о сообщении
+    );
 */
 
 // Есть ли в буффере обмена данные заданного формата
 /*
-	позволяет функция:
+    позволяет функция:
 
-	BOOL IsClipboardFormatAvailable(
-		UINT format // формат данных
-	);
+    BOOL IsClipboardFormatAvailable(
+        UINT format // формат данных
+    );
 
-	где format:
+    где format:
 
-	CF_TEXT			- текст
-	CF_BITMAP		- изображение (bitmap)
-	CF_UNICODETEXT	- unicode текст
+    CF_TEXT			- текст
+    CF_BITMAP		- изображение (bitmap)
+    CF_UNICODETEXT	- unicode текст
 
-	https://msdn.microsoft.com/en-us/library/windows/desktop/ff729168%28v=vs.85%29.aspx
+    https://msdn.microsoft.com/en-us/library/windows/desktop/ff729168%28v=vs.85%29.aspx
 */
 
 // Практическая часть
@@ -222,7 +224,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/bb775464(v=vs.85).aspx
 
    2. Написать приложение, которое по введенной дате определяет день недели. При этом день, месяц и год необходимо 
       вводить в отдельные текстовые поля. Результат также следует выводить в текстовое поле со стилем Read Only.
-	  Предусмотреть проверку корректности ввода даты.
+      Предусмотреть проверку корректности ввода даты.
 */
 
 //Домашнее задание
