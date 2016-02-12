@@ -1,6 +1,8 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include <CommCtrl.h>
+#include <map>
+#include <string>
 #include "resource.h"
 
 
@@ -11,10 +13,17 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpszCmdOpt, int nSh
 	return DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc);
 }
 
+std::map<int, HWND> hButtons;
+
+HWND hList;
+
 INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{		
+	case WM_INITDIALOG:
+		
+		return TRUE;
 	case WM_COMMAND:		
 		switch (LOWORD(wParam))
 		{

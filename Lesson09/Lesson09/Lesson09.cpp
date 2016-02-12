@@ -2,6 +2,11 @@
 //
 
 #include "stdafx.h"
+#include <Windows.h>
+#include <bitset>
+#include <iostream>
+#include <vector>
+#include <string>
 
 // Повторение пройденного материала
 /*
@@ -25,7 +30,13 @@
 
 
 // Элемент управления «список» (List Box)
+
 /*
+    Элемент управления List Box представляет собой список элементов,
+    из которых пользователь может выбрать один или более. Элементы 
+    списка могут быть представлены строками, растровыми образами 
+    или комбинацией текста и изображения.
+
     Обзор списков:
         https://msdn.microsoft.com/en-us/library/windows/desktop/bb775144(v=vs.85).aspx
 
@@ -71,7 +82,6 @@
                     SendMessage возвращает индекс найденной строки или LB_ERR, 
                     если поиск завершился неуспешно
 
-
     Код сообщения:	LB_GETCURSEL
            wParam:	0		
            lParam:	0		
@@ -104,7 +114,6 @@
          Описание:	Аналогично сообщению LB_FINDSTRING, но дополнительно 
                     выделяется найденная строка
 
-
     Код сообщения:	LB_SETSEL
            wParam:	wParam		
            lParam:	iIndex		
@@ -133,34 +142,19 @@
            lParam:	0		
          Описание:	Получить длину строки с индексом iIndex
 
-                    
-        
     Код сообщения:	LB_RESETCONTENT
            wParam:	0		
            lParam:	0		
          Описание:	Удалить все элементы из списка
-        
-                    
-        
+                
     Код сообщения:	LB_SETCURSEL
            wParam:	iIndex		
            lParam:	0		
          Описание:	Выбрать элемент с индексом iIndex (в списке с единичным 
                     выбором)
         
-                    
-        
-   Код сообщения:	LB_SETITEMDATA
-          wParam:	iIndex
-          lParam:	nValue
-        Описание:	Установить целочисленное значение nValue, ассоциированное 
-                    с указанным элементом списка
-
-   Код сообщения:	LB_GETITEMDATA
-          wParam:	iIndex
-          lParam:	0
-        Описание:	Получить целочисленное значение, ассоциированное с 
-                    элементом списка, имеющим индекс iIndex
+    Макросы для работы со списками:
+        https://msdn.microsoft.com/en-us/library/windows/desktop/ff485966(v=vs.85).aspx
 */
 
 // Уведомления списка
@@ -172,8 +166,6 @@
     дескриптор списка.
 
     Список всех уведомлений:
-
-
     https://msdn.microsoft.com/en-us/library/windows/desktop/bb775146(v=vs.85).aspx#Notifications
     
     Некоторые из кодов уведомления от списка:
@@ -185,11 +177,177 @@
     LBN_DBLCLK		На данном пункте списка был двойной щелчок мыши 
                     (свойство Notify должно иметь значение True)
     LBN_ERRSPACE	Превышен размер памяти, отведенный для списка
+*/
+
+// Элемент управления «комбинированный список» (Combo Box)
+/*
+    Комбинированный список (Combo Box) является комбинацией списка 
+    и текстового поля ввода.
+
+    Обзор:
+        https://msdn.microsoft.com/en-us/library/windows/desktop/bb775791(v=vs.85).aspx
+
+    Многие свойства Combo Box аналогичны свойствам элемента управления 
+    List Box. Но есть и некоторые различия. В частности, стиль 
+    комбинированного списка задаётся свойством Туре, которое принимает 
+    одно из следующих значений:	
+        Simple (CBS_SIMPLE), 
+        Dropdown (CBS_DROPDOWN), 
+        Drop List (CBS_DROPDOWNLIST)
+
+    Создание комбинированного списка: класс COMBOBOX
+
+    CreateWindowEx(WS_EX_DLGMODALFRAME, 
+                   TEXT("COMBOBOX"), 0,
+                   WS_CHILD | WS_VISIBLE | CBS_SORT | CBS_DROPDOWNLIST,
+                   LEFT, TOP, WIDTH, HEIGHT, 
+                   hWnd, 
+                   0, 
+                   hInstance, 
+                   0);
+    Все стили:
+        https://msdn.microsoft.com/en-us/library/windows/desktop/bb775796(v=vs.85).aspx
+
 
 */
 
+// Сообщения комбинированных списков
+/*
+    Обмен сообщениями с комбинированным списком во многом похож на обмен  
+    сообщениями с элементами управления Edit Box и List Box. 
+    При этом идентификаторы сообщений, отправляемых элементу управления 
+    Combo Box, начинаются с префикса СВ_, а идентификаторы уведомительных 
+    сообщений, посылаемых от Combo Box своему родительскому окну, имеют 
+    префикс CBN_.
+
+    Сравнение сообщений Edit Control, List Box и Combo Box
+    ========================== ===============================
+        Код сообщения для
+    Edit Control или List Box	Код сообщения для Combo Box
+    ========================== ===============================
+        EM_GETSEL						CB_GETEDITSEL
+    -------------------------- -------------------------------
+        EM_SETSEL						CB_SETEDITSEL
+    -------------------------- -------------------------------
+        LB_ADDSTRING					CB_ADDSTRING
+    -------------------------- -------------------------------
+        LB_DELETESTRING					CB_DELETESTRING
+    -------------------------- -------------------------------
+        LB_GETCOUNT						CB_GETCOUNT
+    -------------------------- -------------------------------
+        LB_GETCURSEL					CB_GETCURSEL
+    -------------------------- -------------------------------
+        LB_GETTEXT						CB_GETLBTEXT
+    -------------------------- -------------------------------
+        LB_SETCURSEL					CB_SETCURSEL
+    -------------------------- -------------------------------
+
+
+    Сравнительный анализ кодов уведомлений.
+    ========================== ===============================
+        Код уведомления для
+    Edit Control или List Box		Код уведомления для Combo Box
+    ========================== ===============================
+    EN_SETFOCUS, LBN_SETFOCUS			CBN_SETFOCUS
+    -------------------------- -------------------------------
+    EN_KILLFOCUS, LBN_KILLFOCUS			CBN_KILLFOCUS
+    -------------------------- -------------------------------
+    EN_UPDATE							CBN_EDITUPDATE
+    -------------------------- -------------------------------
+    EN_CHANGE							CBN_EDITCHANGE
+    -------------------------- -------------------------------
+    EN_ERRSPACE, LBN_ERRSPACE			CBN_ERRSPACE
+    -------------------------- -------------------------------
+    LBN_SELCHANGE						CBN_SELCHANGE
+    -------------------------- -------------------------------
+
+*/
+
+
+std::string drive_type(LPCTSTR type)
+{
+	std::string str_type;
+	switch (GetDriveType(type))
+	{
+	case DRIVE_NO_ROOT_DIR:
+		str_type = "NO ROOT DIR";
+		break;
+	case DRIVE_REMOVABLE:
+		str_type = "REMOVABLE";
+		break;
+	case DRIVE_FIXED:
+		str_type = "FIXEDR";
+		break;
+	case DRIVE_REMOTE:
+		str_type = "REMOTE";
+		break;
+	case DRIVE_CDROM:
+		str_type = "CDROM";
+		break;
+	case DRIVE_RAMDISK:
+		str_type = "RAMDISK";
+		break;
+	case DRIVE_UNKNOWN:
+	default:
+		str_type = "UNKNOWN";
+	}
+	return str_type;
+}
+
+void ex()
+{
+	/*
+	Примеры http://www.softzenware.com/visual/visual24.html
+			https://shinigamiblog.wordpress.com/2011/02/27/getlogicaldrivestrings-%D1%87%D1%82%D0%BE-%D1%8D%D1%82%D0%BE-%D0%B8-%D1%81%D0%BE%D0%B1%D1%81%D0%BD%D0%B0-%D0%B7%D0%B0%D1%87%D0%B5%D0%BC/
+	*/
+    /*
+        Функция GetLogicalDrives возвращает битовую маску логических дисков,
+        которые доступны в данный момент. При этом каждый бит маски 
+        представляет собой конкретный диск. Если бит установлен, то 
+        логический диск доступен, в противном случае бит будет сброшен. 
+        Бит 0 соответствует диску A, бит 1 – диску B, бит 2 – диску С и т.д
+
+		https://msdn.microsoft.com/en-us/library/windows/desktop/aa364972(v=vs.85).aspx
+    */
+    DWORD drivers = GetLogicalDrives();
+	std::vector<std::string> strdrivers;
+    std::bitset<26> drivers_map = drivers;
+	std::cout << drivers_map << std::endl;
+	for (int i = 0; i < 26; i++) {
+		if ((drivers >> i) & 0x00000001)
+		{
+			char ch[2] = { 'A' + i, '\0' };
+			strdrivers.push_back(std::string(ch) + std::string(":\\"));			
+		}
+	}
+
+	for (auto drive : strdrivers)
+	{
+
+		/*
+		Функция GetDriveType возвращает тип накопителя по заданному имени
+		корневого пути (например, “C:\\”).
+
+		https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939(v=vs.85).aspx
+		*/
+		std::cout << drive << " " << drive_type(LPCTSTR(drive.c_str())) << std::endl;
+	}
+
+	/*
+		Функция GetLogicalDriveStrings заполняет буфер строками, которые 
+		определяют действительные логические диски в системе.
+
+		https://msdn.microsoft.com/en-us/library/windows/desktop/aa364975(v=vs.85).aspx
+	*/
+	DWORD dwSize = GetLogicalDriveStrings(0, NULL);	//возвращает длину строки c дисками, поэтому вызовем ее с нулем	
+	TCHAR* szDrives = new TCHAR[dwSize];
+	GetLogicalDriveStrings(dwSize, szDrives);
+	std::wcout << szDrives << std::endl;
+}
+
 int main()
 {
+	///ex();
     return 0;
 }
 
