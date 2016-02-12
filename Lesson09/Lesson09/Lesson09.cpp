@@ -261,45 +261,47 @@
     LBN_SELCHANGE						CBN_SELCHANGE
     -------------------------- -------------------------------
 
+    ћакросы:
+    https://msdn.microsoft.com/en-us/library/windows/desktop/bb775792(v=vs.85).aspx#Macros
 */
 
 
 std::string drive_type(LPCTSTR type)
 {
-	std::string str_type;
-	switch (GetDriveType(type))
-	{
-	case DRIVE_NO_ROOT_DIR:
-		str_type = "NO ROOT DIR";
-		break;
-	case DRIVE_REMOVABLE:
-		str_type = "REMOVABLE";
-		break;
-	case DRIVE_FIXED:
-		str_type = "FIXEDR";
-		break;
-	case DRIVE_REMOTE:
-		str_type = "REMOTE";
-		break;
-	case DRIVE_CDROM:
-		str_type = "CDROM";
-		break;
-	case DRIVE_RAMDISK:
-		str_type = "RAMDISK";
-		break;
-	case DRIVE_UNKNOWN:
-	default:
-		str_type = "UNKNOWN";
-	}
-	return str_type;
+    std::string str_type;
+    switch (GetDriveType(type))
+    {
+    case DRIVE_NO_ROOT_DIR:
+        str_type = "NO ROOT DIR";
+        break;
+    case DRIVE_REMOVABLE:
+        str_type = "REMOVABLE";
+        break;
+    case DRIVE_FIXED:
+        str_type = "FIXEDR";
+        break;
+    case DRIVE_REMOTE:
+        str_type = "REMOTE";
+        break;
+    case DRIVE_CDROM:
+        str_type = "CDROM";
+        break;
+    case DRIVE_RAMDISK:
+        str_type = "RAMDISK";
+        break;
+    case DRIVE_UNKNOWN:
+    default:
+        str_type = "UNKNOWN";
+    }
+    return str_type;
 }
 
 void ex()
 {
-	/*
-	ѕримеры http://www.softzenware.com/visual/visual24.html
-			https://shinigamiblog.wordpress.com/2011/02/27/getlogicaldrivestrings-%D1%87%D1%82%D0%BE-%D1%8D%D1%82%D0%BE-%D0%B8-%D1%81%D0%BE%D0%B1%D1%81%D0%BD%D0%B0-%D0%B7%D0%B0%D1%87%D0%B5%D0%BC/
-	*/
+    /*
+    ѕримеры http://www.softzenware.com/visual/visual24.html
+            https://shinigamiblog.wordpress.com/2011/02/27/getlogicaldrivestrings-%D1%87%D1%82%D0%BE-%D1%8D%D1%82%D0%BE-%D0%B8-%D1%81%D0%BE%D0%B1%D1%81%D0%BD%D0%B0-%D0%B7%D0%B0%D1%87%D0%B5%D0%BC/
+    */
     /*
         ‘ункци€ GetLogicalDrives возвращает битовую маску логических дисков,
         которые доступны в данный момент. ѕри этом каждый бит маски 
@@ -307,47 +309,47 @@ void ex()
         логический диск доступен, в противном случае бит будет сброшен. 
         Ѕит 0 соответствует диску A, бит 1 Ц диску B, бит 2 Ц диску — и т.д
 
-		https://msdn.microsoft.com/en-us/library/windows/desktop/aa364972(v=vs.85).aspx
+        https://msdn.microsoft.com/en-us/library/windows/desktop/aa364972(v=vs.85).aspx
     */
     DWORD drivers = GetLogicalDrives();
-	std::vector<std::string> strdrivers;
+    std::vector<std::string> strdrivers;
     std::bitset<26> drivers_map = drivers;
-	std::cout << drivers_map << std::endl;
-	for (int i = 0; i < 26; i++) {
-		if ((drivers >> i) & 0x00000001)
-		{
-			char ch[2] = { 'A' + i, '\0' };
-			strdrivers.push_back(std::string(ch) + std::string(":\\"));			
-		}
-	}
+    std::cout << drivers_map << std::endl;
+    for (int i = 0; i < 26; i++) {
+        if ((drivers >> i) & 0x00000001)
+        {
+            char ch[2] = { 'A' + i, '\0' };
+            strdrivers.push_back(std::string(ch) + std::string(":\\"));			
+        }
+    }
 
-	for (auto drive : strdrivers)
-	{
+    for (auto drive : strdrivers)
+    {
 
-		/*
-		‘ункци€ GetDriveType возвращает тип накопител€ по заданному имени
-		корневого пути (например, УC:\\Ф).
+        /*
+        ‘ункци€ GetDriveType возвращает тип накопител€ по заданному имени
+        корневого пути (например, УC:\\Ф).
 
-		https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939(v=vs.85).aspx
-		*/
-		std::cout << drive << " " << drive_type(LPCTSTR(drive.c_str())) << std::endl;
-	}
+        https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939(v=vs.85).aspx
+        */
+        std::cout << drive << " " << drive_type(LPCTSTR(drive.c_str())) << std::endl;
+    }
 
-	/*
-		‘ункци€ GetLogicalDriveStrings заполн€ет буфер строками, которые 
-		определ€ют действительные логические диски в системе.
+    /*
+        ‘ункци€ GetLogicalDriveStrings заполн€ет буфер строками, которые 
+        определ€ют действительные логические диски в системе.
 
-		https://msdn.microsoft.com/en-us/library/windows/desktop/aa364975(v=vs.85).aspx
-	*/
-	DWORD dwSize = GetLogicalDriveStrings(0, NULL);	//возвращает длину строки c дисками, поэтому вызовем ее с нулем	
-	TCHAR* szDrives = new TCHAR[dwSize];
-	GetLogicalDriveStrings(dwSize, szDrives);
-	std::wcout << szDrives << std::endl;
+        https://msdn.microsoft.com/en-us/library/windows/desktop/aa364975(v=vs.85).aspx
+    */
+    DWORD dwSize = GetLogicalDriveStrings(0, NULL);	//возвращает длину строки c дисками, поэтому вызовем ее с нулем	
+    TCHAR* szDrives = new TCHAR[dwSize];
+    GetLogicalDriveStrings(dwSize, szDrives);
+    std::wcout << szDrives << std::endl;
 }
 
 int main()
 {
-	///ex();
+    ///ex();
     return 0;
 }
 
