@@ -324,25 +324,41 @@ void ex()
     std::vector<std::string> strdrivers;
     std::bitset<26> drivers_map = drivers;
     std::cout << drivers_map << std::endl;
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < 26; i++)
+    {        
+        if (drivers_map.test(i))
+        {
+            std::cout << "Present drive " << char('A' + i) << ":\\" << std::endl;
+            std::string type = char('A' + i) + ":\\";
+            int t = GetDriveType(LPCTSTR(type.c_str()));
+            switch (t)
+            {
+            case DRIVE_CDROM:
+                std::cout << "CD ROM" << std::endl;
+                break;
+            default:
+                break;
+            }
+        }
+    }
+   /* for (int i = 0; i < 26; i++) {
         if ((drivers >> i) & 0x00000001)
         {
             char ch[2] = { 'A' + i, '\0' };
             strdrivers.push_back(std::string(ch) + std::string(":\\"));			
         }
-    }
+    }*/
+    //for (auto drive : strdrivers)
+    //{
 
-    for (auto drive : strdrivers)
-    {
+    //    /*
+    //    ‘ункци€ GetDriveType возвращает тип накопител€ по заданному имени
+    //    корневого пути (например, УC:\\Ф).
 
-        /*
-        ‘ункци€ GetDriveType возвращает тип накопител€ по заданному имени
-        корневого пути (например, УC:\\Ф).
-
-        https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939(v=vs.85).aspx
-        */
-        std::cout << drive << " " << drive_type(LPCTSTR(drive.c_str())) << std::endl;
-    }
+    //    https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939(v=vs.85).aspx
+    //    */
+    //    std::cout << drive << " " << drive_type(LPCTSTR(drive.c_str())) << std::endl;
+    //}
 
     /*
         ‘ункци€ GetLogicalDriveStrings заполн€ет буфер строками, которые 
@@ -350,15 +366,15 @@ void ex()
 
         https://msdn.microsoft.com/en-us/library/windows/desktop/aa364975(v=vs.85).aspx
     */
-    DWORD dwSize = GetLogicalDriveStrings(0, NULL);	//возвращает длину строки c дисками, поэтому вызовем ее с нулем	
-    TCHAR* szDrives = new TCHAR[dwSize];
-    GetLogicalDriveStrings(dwSize, szDrives);
-    std::wcout << szDrives << std::endl;
+    //DWORD dwSize = GetLogicalDriveStrings(0, NULL);	//возвращает длину строки c дисками, поэтому вызовем ее с нулем	
+    //TCHAR* szDrives = new TCHAR[dwSize];
+    //GetLogicalDriveStrings(dwSize, szDrives);
+    //std::wcout << szDrives << std::endl;
 }
 
 int main()
 {
-    ///ex();
+    ex();
     return 0;
 }
 
