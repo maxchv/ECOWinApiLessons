@@ -10,7 +10,6 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpszCmdOpt, int nSh
 }
 
 HWND hEdit;
-
 WNDPROC OriginalProc = NULL;
 
 LRESULT CALLBACK EditProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

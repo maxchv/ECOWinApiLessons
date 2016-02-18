@@ -40,7 +40,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/bb775456(v=vs.85).aspx
     Microsoft Visual Studio;
 •	посредством вызова функции CreateWindow
 
-	Класс EDIT
+    Класс EDIT
 
 Стили Edit Controls
     
