@@ -25,7 +25,9 @@ void Cls_OnCommand(HWND hDlg, int id, HWND hwndCtl, UINT codeNotify)
 	}
 }
 
-void Cls_OnLButtonDown(HWND hDlg, BOOL fDoubleClick, int x, int y, UINT keyFlags)
+#define SHEET Cls_OnLButtonDown
+
+void SHEET(HWND hDlg, BOOL fDoubleClick, int x, int y, UINT keyFlags)
 {
 	TCHAR buff[50];
 	wsprintf(buff, TEXT("x: %d, y: %d"), x, y);
@@ -36,7 +38,7 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
-		HANDLE_MSG(hDlg, WM_CLOSE, Cls_OnClose);
+		HANDLE_MSG(hDlg, WM_CLOSE, Cls_OnClose);	
 		HANDLE_MSG(hDlg, WM_COMMAND, Cls_OnCommand);
 		HANDLE_MSG(hDlg, WM_LBUTTONDOWN, Cls_OnLButtonDown);
 	}

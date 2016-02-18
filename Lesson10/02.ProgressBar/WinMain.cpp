@@ -11,7 +11,8 @@ int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpszCmdOpt, int nSh
 {
 	INITCOMMONCONTROLSEX ctrl;
 	ctrl.dwSize = sizeof(ctrl);
-	ctrl.dwICC = ICC_PROGRESS_CLASS;
+	ctrl.dwICC = ICC_WIN95_CLASSES;
+
 	InitCommonControlsEx(&ctrl);
 
 	return DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc);
@@ -26,10 +27,14 @@ void Cls_OnCommand(HWND hDlg, int id, HWND hwndCtl, UINT codeNotify)
 			SendMessage(hDlg, WM_CLOSE, NULL, NULL);
 			break;
 		case IDC_BTNMINUS:
-			
+			SendDlgItemMessage(hDlg, IDC_PROGRESS1, PBM_DELTAPOS, -10, 0);
+			SendDlgItemMessage(hDlg, IDC_PROGRESS2, PBM_DELTAPOS, -5, 0);
+			SendDlgItemMessage(hDlg, IDC_PROGRESS3, PBM_DELTAPOS, -2, 0);
 			break;
 		case IDC_BTNPLUS:
-			
+			SendDlgItemMessage(hDlg, IDC_PROGRESS1, PBM_STEPIT, 0, 0);
+			SendDlgItemMessage(hDlg, IDC_PROGRESS2, PBM_STEPIT, 0, 0);
+			SendDlgItemMessage(hDlg, IDC_PROGRESS3, PBM_STEPIT, 0, 0);
 			break;
 	}
 }
@@ -41,6 +46,8 @@ void Cls_OnClose(HWND hDlg)
 
 BOOL Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
+	SendDlgItemMessage(hwnd, IDC_PROGRESS1, PBM_SETBARCOLOR, 0, RGB(128, 0, 0));
+	SendDlgItemMessage(hwnd, IDC_PROGRESS1, PBM_SETBKCOLOR, 0, RGB(0, 128, 0));
 	return TRUE;
 }
 INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)

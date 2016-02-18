@@ -53,7 +53,7 @@
 	{
 		switch(message)
 		{
-			HANDLE_MSG(hwnd, WM_CLOSE, Cls_OnClose);
+			HANDLE_MSG(hwnd, WM_CLOSE, Cls_OnClose);			
 		}
 		return FALSE;
 	}
