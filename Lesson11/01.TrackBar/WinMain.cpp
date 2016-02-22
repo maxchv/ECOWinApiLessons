@@ -27,24 +27,14 @@ void Cls_OnCommand(HWND hDlg, int id, HWND hwndCtl, UINT codeNotify)
 	}
 }
 
-void Cls_OnHScroll(HWND hDlg, HWND hwndCtl, UINT code, int pos)
-{
-	
-}
 
-void Cls_OnVScroll(HWND hwnd, HWND hwndCtl, UINT code, int pos)
-{
-
-}
 
 INT_PTR CALLBACK DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch(msg)
 	{
 		HANDLE_MSG(hDlg, WM_CLOSE, Cls_OnClose);
-		HANDLE_MSG(hDlg, WM_COMMAND, Cls_OnCommand);
-		HANDLE_MSG(hDlg, WM_HSCROLL, Cls_OnHScroll);
-		HANDLE_MSG(hDlg, WM_VSCROLL, Cls_OnVScroll);
+		HANDLE_MSG(hDlg, WM_COMMAND, Cls_OnCommand);		
 	}
 	return FALSE;
 }
