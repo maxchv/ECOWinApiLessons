@@ -267,6 +267,7 @@ int LoadString(
     LPTSTR lpBuffer,		// указатель на буфер, в который будет записана строка
     int nBufferMax			// размер буфера
 );
+
 https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms647486(v=vs.85).aspx
 */
 
