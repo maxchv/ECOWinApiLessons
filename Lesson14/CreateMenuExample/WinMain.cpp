@@ -16,7 +16,9 @@ class Application
 	int width;
 	int height;
 	HMENU hMenu;
+	HMENU hContextMenu;
 	HMENU hEdit;
+	HWND hButton;
 
 public:	
 	Application(int id_dialog) : hInstance(GetModuleHandle(0)), id_dlg(id_dialog)
@@ -39,8 +41,18 @@ public:
 			HANDLE_MSG(hDlg, WM_COMMAND, _this->Cls_OnCommand);
 			HANDLE_MSG(hDlg, WM_CLOSE, _this->Cls_OnClose);
 			HANDLE_MSG(hDlg, WM_SIZE, _this->Cls_OnSize);
+			HANDLE_MSG(hDlg, WM_CONTEXTMENU, _this->Cls_OnContextMenu);
 		}
 		return FALSE;
+	}
+
+	void Cls_OnContextMenu(HWND hwnd, HWND hwndContext, UINT xPos, UINT yPos)
+	{
+		//if (hwndContext == hButton) 
+		{
+			TrackPopupMenu(hContextMenu, TPM_BOTTOMALIGN, xPos, yPos, 0, hwndContext, 0);
+		}
+		
 	}
 
 	void Cls_OnSize(HWND hwnd, UINT state, int cx, int cy)
@@ -50,18 +62,16 @@ public:
 		SendMessage(hStatus, WM_SIZE, 0, 0);
 	}
 
-	BOOL Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+	void CreateMainMenu(HWND hwnd)
 	{
-		// Create Menu Here
-
 		// Главное меню
 		hMenu = CreateMenu();
 
 		// Подменю файл
 		HMENU hFileSubMenu = CreatePopupMenu();
 
-		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_NEW, TEXT("&New file"));		
-		AppendMenu(hFileSubMenu, MF_BITMAP, ID_FILE_NEW, (LPCWSTR) hOpen);
+		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_NEW, TEXT("&New file"));
+		AppendMenu(hFileSubMenu, MF_BITMAP, ID_FILE_NEW, (LPCWSTR) "&Open");
 		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_OPEN, TEXT("&Open file"));
 		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_SAVE, TEXT("&Save file"));
 		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_SAVE_AS, TEXT("S&ave as..."));
@@ -75,14 +85,14 @@ public:
 
 		// удаление подпункта меню
 		DeleteMenu(hFileSubMenu, 4, MF_BYPOSITION);
-		
+
 		// Подменю Edit
-		HMENU hEditMenu = CreatePopupMenu();		
+		HMENU hEditMenu = CreatePopupMenu();
 
 		AppendMenu(hEditMenu, MF_STRING, ID_EDIT_COPY, TEXT("Copy"));
 		AppendMenu(hEditMenu, MF_STRING, ID_EDIT_CUT, TEXT("Cut"));
 		AppendMenu(hEditMenu, MF_STRING, ID_EDIT_PASTE, TEXT("Paste"));
-		
+
 		TCHAR str[50];
 		GetMenuString(hEditMenu, ID_EDIT_PASTE, str, 49, MF_BYCOMMAND);
 
@@ -93,12 +103,22 @@ public:
 		AppendMenu(hMenu, MF_POPUP | MF_STRING, (UINT_PTR)hEditMenu, TEXT("&Edit"));
 
 		SetMenu(hwnd, hMenu);
+	}
 
+	BOOL Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
+	{
+		// Create Menu Here
+		CreateMainMenu(hwnd);
 		
+		// Context menu
+		HMENU tmp = LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MENU1));
+		hContextMenu = GetSubMenu(tmp, 0);
 
 		// Status Bar
 		hStatus = CreateStatusWindow(WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP, 0, hwnd, IDD_STATUSBAR);
 		
+		hButton = GetDlgItem(hwnd, IDC_BTNDELETE);
+
 		return FALSE;
 	}
 
@@ -146,6 +166,7 @@ public:
 			DeleteMenu(hMenu, 1, MF_BYPOSITION);
 			DrawMenuBar(hwnd); // перерисовка главного меню					
 			break;
+		case ID_CONTEXTMENU_EXIT:
 		case ID_FILE_EXIT:
 			SendMessage(hwnd, WM_CLOSE, NULL, NULL);
 			break;
