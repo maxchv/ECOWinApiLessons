@@ -60,7 +60,8 @@ public:
 		// Подменю файл
 		HMENU hFileSubMenu = CreatePopupMenu();
 
-		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_NEW, TEXT("&New file"));
+		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_NEW, TEXT("&New file"));		
+		AppendMenu(hFileSubMenu, MF_BITMAP, ID_FILE_NEW, (LPCWSTR) hOpen);
 		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_OPEN, TEXT("&Open file"));
 		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_SAVE, TEXT("&Save file"));
 		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_SAVE_AS, TEXT("S&ave as..."));
