@@ -40,6 +40,7 @@
 
 	HMENU CreateMenu(VOID);
 
+https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms647624%28v=vs.85%29.aspx
 
 Меню, созданное этой функцией, изначально будет пустым, т.е.не 
 будет содержать ни одного пункта.
@@ -53,7 +54,9 @@
 всплывающего меню приложения:
 
 	HMENU CreatePopupMenu(VOID);	
-	
+
+https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms647626%28v=vs.85%29.aspx
+
 Всплывающее меню, созданное этой функцией, также изначально 
 будет пустым.
 
@@ -75,6 +78,8 @@ BOOL AppendMenu(
 	LPCTSTR lpNewItem // содержимое нового пункта меню – зависит 
 				// от второго 	 параметра
 	);
+
+https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms647616%28v=vs.85%29.aspx
 
 Второй параметр может иметь одно или несколько значений(флагов), 
 приведенных ниже.
@@ -120,6 +125,7 @@ BOOL InsertMenu(
 					  // от третьего 	параметра
 	);
 
+https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms647987%28v=vs.85%29.aspx
 Второму параметру функции uPosition передается либо идентификатор 
 пункта меню, либо позиция пункта меню.
 
@@ -153,6 +159,8 @@ BOOL ModifyMenu(
 					 //меню – зависит от третьего параметра
 	);
 
+https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms647993%28v=vs.85%29.aspx
+
 Назначение параметров функции ModifyMenu аналогично функции 
 InsertMenu.
 */
@@ -168,6 +176,8 @@ BOOL DeleteMenu(
 					//который будет удален
 	UINT uFlags		// интерпретация второго параметра
 	);
+
+https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms647629%28v=vs.85%29.aspx
 
 Следует отметить, что если удаляемым пунктом является выпадающее 
 меню, то оно уничтожается и высвобождается память.
@@ -186,6 +196,8 @@ BOOL DeleteMenu(
 BOOL DestroyMenu(
 	HMENU hMenu // дескриптор уничтожаемого меню
 	);
+
+https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms647631%28v=vs.85%29.aspx
 */
 
 // Получение текста пункта меню
@@ -203,6 +215,8 @@ int GetMenuString(
 					// должно быть записано в буфер
 	UINT uFlag		// интерпретация второго параметра
 	);
+
+https://msdn.microsoft.com/ru-ru/library/windows/desktop/ms647983%28v=vs.85%29.aspx
 */
 
 // Практическая часть
