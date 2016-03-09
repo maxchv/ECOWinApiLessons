@@ -2,6 +2,7 @@
 #include <windowsx.h>
 #include <CommCtrl.h>
 #include "resource.h"
+#include "Defines.h"
 
 #pragma comment(lib, "comctl32")
 
@@ -16,8 +17,8 @@ class Application
 	int height;
 	HMENU hMenu;
 	HMENU hEdit;
-public:
-	
+
+public:	
 	Application(int id_dialog) : hInstance(GetModuleHandle(0)), id_dlg(id_dialog)
 	{	
 		_this = this;
@@ -52,8 +53,47 @@ public:
 	BOOL Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	{
 		// Create Menu Here
-		
 
+		// Главное меню
+		hMenu = CreateMenu();
+
+		// Подменю файл
+		HMENU hFileSubMenu = CreatePopupMenu();
+
+		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_NEW, TEXT("&New file"));
+		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_OPEN, TEXT("&Open file"));
+		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_SAVE, TEXT("&Save file"));
+		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_SAVE_AS, TEXT("S&ave as..."));
+		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_PRINT, TEXT("&Print..."));
+		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_PAGE_SETUP, TEXT("Pa&ge setup..."));
+		AppendMenu(hFileSubMenu, MF_STRING, ID_FILE_EXIT, TEXT("E&xit"));
+
+		InsertMenu(hFileSubMenu, ID_FILE_EXIT, MF_BYCOMMAND | MF_SEPARATOR, 0, 0);
+		InsertMenu(hFileSubMenu, ID_FILE_PRINT, MF_BYCOMMAND | MF_STRING, 0, TEXT("New item"));
+		InsertMenu(hFileSubMenu, ID_FILE_PRINT, MF_BYCOMMAND | MF_SEPARATOR, 0, 0);
+
+		// удаление подпункта меню
+		DeleteMenu(hFileSubMenu, 4, MF_BYPOSITION);
+		
+		// Подменю Edit
+		HMENU hEditMenu = CreatePopupMenu();		
+
+		AppendMenu(hEditMenu, MF_STRING, ID_EDIT_COPY, TEXT("Copy"));
+		AppendMenu(hEditMenu, MF_STRING, ID_EDIT_CUT, TEXT("Cut"));
+		AppendMenu(hEditMenu, MF_STRING, ID_EDIT_PASTE, TEXT("Paste"));
+		
+		TCHAR str[50];
+		GetMenuString(hEditMenu, ID_EDIT_PASTE, str, 49, MF_BYCOMMAND);
+
+		ModifyMenu(hEditMenu, ID_EDIT_PASTE, MF_BYCOMMAND | MF_DISABLED, ID_EDIT_PASTE, str);
+
+		// Добавление подменю в главное меню приложения
+		AppendMenu(hMenu, MF_POPUP | MF_STRING, (UINT_PTR)hFileSubMenu, TEXT("&File"));
+		AppendMenu(hMenu, MF_POPUP | MF_STRING, (UINT_PTR)hEditMenu, TEXT("&Edit"));
+
+		SetMenu(hwnd, hMenu);
+
+		
 
 		// Status Bar
 		hStatus = CreateStatusWindow(WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP, 0, hwnd, IDD_STATUSBAR);
@@ -101,8 +141,13 @@ public:
 	{
 		switch (id)
 		{
+		case IDC_BTNDELETE:
+			DeleteMenu(hMenu, 1, MF_BYPOSITION);
+			DrawMenuBar(hwnd); // перерисовка главного меню					
+			break;
 		case ID_FILE_EXIT:
 			SendMessage(hwnd, WM_CLOSE, NULL, NULL);
+			break;
 		default:
 			break;
 		}

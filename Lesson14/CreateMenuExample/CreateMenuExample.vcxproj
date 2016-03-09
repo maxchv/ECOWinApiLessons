@@ -78,6 +78,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Defines.h" />
     <ClInclude Include="DialogWindow.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
