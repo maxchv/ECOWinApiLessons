@@ -5,7 +5,6 @@ class CMainModalDialog
 {
 public:
 	CMainModalDialog(void);
-public:
 	~CMainModalDialog(void);
 	static BOOL CALLBACK DlgProc(HWND hWnd, UINT mes, WPARAM wp, LPARAM lp);
 	static CMainModalDialog* ptr;

@@ -5,17 +5,28 @@ CAdditionalModalDialog* CAdditionalModalDialog::ptr = NULL;
 CAdditionalModalDialog::CAdditionalModalDialog(void)
 {
 	ptr = this;
+	msg[0] = '\0';
 }
 
-CAdditionalModalDialog::CAdditionalModalDialog(LPCTSTR lpStr)
+CAdditionalModalDialog::CAdditionalModalDialog(TCHAR * msg)
 {
 	ptr = this;
-	_tcscpy(text, lpStr);
+	SendMsg(msg);
 }
 
-CAdditionalModalDialog::~CAdditionalModalDialog(void)
+CAdditionalModalDialog::~CAdditionalModalDialog()
 {
 
+}
+
+void CAdditionalModalDialog::SendMsg(TCHAR * msg)
+{
+	_tcscpy(this->msg, msg);
+}
+
+TCHAR * CAdditionalModalDialog::GetMsg()
+{	
+	return msg;
 }
 
 void CAdditionalModalDialog::Cls_OnClose(HWND hwnd)
@@ -26,30 +37,35 @@ void CAdditionalModalDialog::Cls_OnClose(HWND hwnd)
 BOOL CAdditionalModalDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam) 
 {
 	hEdit = GetDlgItem(hwnd, IDC_EDIT1);
-	hStatic = GetDlgItem(hwnd, IDC_STATIC1);
-	// ѕереданные от главного диалога данные отображаютс€ на статике
-	SetWindowText(hStatic, text);
+	hStatic = GetDlgItem(hwnd, IDC_STATIC1);	
 	SetWindowText(hwnd, TEXT("ƒополнительный модальный диалог"));
 	SetWindowText(hEdit, TEXT("ѕередача данных главному диалогу!"));
+	if (msg[0] != '\0')
+	{
+		SetWindowText(hStatic, msg);
+	}
 	return TRUE;
 }
 
 
 void CAdditionalModalDialog::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
-	if(id == IDOK)
+	switch (id)
 	{
-		TCHAR buffer[200];
-		GetWindowText(hEdit, buffer, 200);
-		_tcscpy(text, buffer);
+	case IDOK:
+	{
+		// получить дескриптор родительского окан
 		HWND hParent = GetParent(hwnd);
-		// ѕередача данных главному диалогу
-		SetWindowText(hParent, TEXT("ѕривет от дочернего окна!"));
+		// передать сообщение родителю
+		SendMessage(hParent, WM_SETTEXT, NULL, (LPARAM)TEXT("ѕривет из дочернего окна"));
 		EndDialog(hwnd, IDOK);
+		break;
 	}
-	else if(id == IDCANCEL)
-	{
+	case IDCANCEL:
 		EndDialog(hwnd, IDCANCEL);
+		break;
+	default:
+		break;
 	}
 }
 
