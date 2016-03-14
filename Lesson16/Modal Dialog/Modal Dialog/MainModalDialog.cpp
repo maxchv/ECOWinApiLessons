@@ -35,28 +35,34 @@ void CMainModalDialog::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeN
 	if(id == IDC_BUTTON1)
 	{
 		CAdditionalModalDialog dlg;
-		TCHAR buffer[200];
-		GetWindowText(hEdit1, buffer, 200);
-		// передача данных через public-поле класса CAdditionalModalDialog дополнительного диалога
-		_tcscpy(dlg.text, buffer);
-		INT_PTR result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG2), hwnd, CAdditionalModalDialog::DlgProc);
-		if(result == IDOK)
+		TCHAR buf[100];
+		GetWindowText(hEdit1, buf, 100);
+		dlg.SendMsg(buf);
+		if (DialogBox(GetModuleHandle(0), MAKEINTRESOURCE(IDD_DIALOG2), hwnd, CAdditionalModalDialog::DlgProc) == IDOK)
 		{
-			// Переданные от дополнительного диалога данные отображаются на статике
-			SetWindowText(hStatic1, dlg.text);
+			//MessageBox(hwnd, TEXT("OK"), TEXT(""), 0);
+			_tcscpy(buf, dlg.GetMsg());
+			SetWindowText(hStatic1, buf);
+
+		}
+		else
+		{
+			//MessageBox(hwnd, TEXT("Cancel"), TEXT(""), 0);
 		}
 	}
 	else if(id == IDC_BUTTON2)
 	{
-		TCHAR buffer[200];
-		GetWindowText(hEdit2, buffer, 200);
-		// передача данных через конструктор класса CAdditionalModalDialog дополнительного диалога
-		CAdditionalModalDialog dlg(buffer);
-		INT_PTR result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG2), hwnd, CAdditionalModalDialog::DlgProc);
-		if(result == IDOK)
+		TCHAR buf[100];
+		GetWindowText(hEdit2, buf, 100);
+		CAdditionalModalDialog dlg(buf);
+		if (DialogBox(GetModuleHandle(0), MAKEINTRESOURCE(IDD_DIALOG2), hwnd, CAdditionalModalDialog::DlgProc) == IDOK)
 		{
-			// Переданные от дополнительного диалога данные отображаются на статике
-			SetWindowText(hStatic2, dlg.text);
+			SetWindowText(hStatic2, dlg.GetMsg());
+			//MessageBox(hwnd, TEXT("OK"), TEXT(""), 0);
+		}
+		else
+		{
+			//MessageBox(hwnd, TEXT("Cancel"), TEXT(""), 0);
 		}
 	}
 }
