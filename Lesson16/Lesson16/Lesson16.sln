@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Lesson16", "Lesson16\Lesson16.vcxproj", "{8D2274B3-5F1E-4674-B3C7-01E79363464D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Modal Dialog", "..\Modal Dialog\Modal Dialog\Modal Dialog.vcxproj", "{A725EA8D-B285-478A-A5DF-A23E230C8966}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Standard Dialog", "..\Standard Dialog\Standard Dialog\Standard Dialog.vcxproj", "{57EFEB29-29EE-496A-821B-8C6D275B38D3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8D2274B3-5F1E-4674-B3C7-01E79363464D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8D2274B3-5F1E-4674-B3C7-01E79363464D}.Debug|Win32.Build.0 = Debug|Win32
+		{8D2274B3-5F1E-4674-B3C7-01E79363464D}.Release|Win32.ActiveCfg = Release|Win32
+		{8D2274B3-5F1E-4674-B3C7-01E79363464D}.Release|Win32.Build.0 = Release|Win32
+		{A725EA8D-B285-478A-A5DF-A23E230C8966}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A725EA8D-B285-478A-A5DF-A23E230C8966}.Debug|Win32.Build.0 = Debug|Win32
+		{A725EA8D-B285-478A-A5DF-A23E230C8966}.Release|Win32.ActiveCfg = Release|Win32
+		{A725EA8D-B285-478A-A5DF-A23E230C8966}.Release|Win32.Build.0 = Release|Win32
+		{57EFEB29-29EE-496A-821B-8C6D275B38D3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{57EFEB29-29EE-496A-821B-8C6D275B38D3}.Debug|Win32.Build.0 = Debug|Win32
+		{57EFEB29-29EE-496A-821B-8C6D275B38D3}.Release|Win32.ActiveCfg = Release|Win32
+		{57EFEB29-29EE-496A-821B-8C6D275B38D3}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
