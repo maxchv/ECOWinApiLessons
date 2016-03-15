@@ -13,13 +13,39 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Ukrainian resources
+// Russian (Russia) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open",                       ID_FILE_OPEN40001
+        MENUITEM "&Save",                       ID_FILE_SAVE40002
+        MENUITEM "S&ave as...",                 ID_FILE_SAVE40003
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+END
+
+#endif    // Russian (Russia) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Ukrainian (Ukraine) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
-#ifdef _WIN32
 LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 #pragma code_page(1251)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -52,13 +78,15 @@ END
 // Dialog
 //
 
-IDD_DIALOG1 DIALOGEX 0, 0, 186, 67
+IDD_DIALOG1 DIALOGEX 0, 0, 273, 168
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Стандартные диалоги"
+MENU IDR_MENU1
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "Открыть",IDC_OPEN,27,24,57,19,0,WS_EX_DLGMODALFRAME
-    PUSHBUTTON      "Сохранить",IDC_SAVE,100,24,57,19,0,WS_EX_DLGMODALFRAME
+    PUSHBUTTON      "Открыть",ID_FILE_OPEN40001,7,142,57,19,0,WS_EX_DLGMODALFRAME
+    PUSHBUTTON      "Сохранить",ID_FILE_SAVE40002,209,142,57,19,0,WS_EX_DLGMODALFRAME
+    EDITTEXT        IDC_EDIT1,7,7,259,131,ES_MULTILINE | ES_AUTOHSCROLL | ES_WANTRETURN
 END
 
 
@@ -68,19 +96,30 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DIALOG1, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 179
+        RIGHTMARGIN, 266
         TOPMARGIN, 7
-        BOTTOMMARGIN, 60
+        BOTTOMMARGIN, 161
     END
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Ukrainian resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Ukrainian (Ukraine) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
