@@ -5,7 +5,6 @@
 class CModelessDialog
 {
 public:
-	
 	static BOOL CALLBACK DlgProc(HWND hWnd, UINT mes, WPARAM wp, LPARAM lp);	
 	HWND getStaticHWND();
 	static HWND getDlgHWND();

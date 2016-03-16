@@ -8,7 +8,7 @@ CMainDialog* CMainDialog::ptr = NULL;
 CMainDialog::CMainDialog(void)
 {
 	ptr = this;
-	hFR = NULL;
+	hFindReplace = NULL;
 	ZeroMemory(&fr, sizeof(fr));
 }
 
@@ -23,6 +23,7 @@ BOOL CMainDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
 	hDialog = hwnd;
 	hEdit = GetDlgItem(hwnd, IDC_EDIT1);
+	SetWindowText(hEdit, TEXT("— Как по английски работа?\r\n— Job\r\n — А работать?\r\n— Вjobывать"));
 	return TRUE;
 }
 
@@ -37,75 +38,95 @@ void CMainDialog::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify
 void CMainDialog::OnFind()
 {
 	// Проверим, открыто ли окно поиска
-	if(hFR)
+	if(hFindReplace)
 	{
 		//Активизируем окно поиска
-		SetForegroundWindow(hFR);
+		SetForegroundWindow(hFindReplace);
 		return;
 	}
 	// обнуляем структуру FINDREPLACE
 	ZeroMemory(&fr, sizeof(fr));
 	DWORD start, end;
-	// получим весь текст, находяшийся в текстовом поле ввода
-	
-	GetWindowText(hEdit, alltext, 65536);
+	// получим весь текст, находяшийся в текстовом поле ввода	
+	GetWindowText(hEdit, alltext, 65536);	
+
 	// получим границы выделения фрагмента текста
-	SendMessage(hEdit, EM_GETSEL, WPARAM(&start), LPARAM(&end));
+	//SendMessage(hEdit, EM_GETSEL, WPARAM(&start), LPARAM(&end));
+	DWORD selected = Edit_GetSel(hEdit);
+	start = LOWORD(selected);
+	end = HIWORD(selected);
+
 	// скопируем в буфер выделенный фрагмент текста
-	_tcsncpy(bufFind, alltext+start, end-start);
+	_tcsncpy(bufFind, alltext+start, end-start);	
 	bufFind[end - start] = TEXT('\0');
+
 	fr.lStructSize = sizeof(fr);
+	
 	// главный диалог является окном-владелецем
 	fr.hwndOwner = hDialog;
+
 	// указатель на буфер, содержащий строку для поиска
-	fr.lpstrFindWhat = bufFind; 
+	fr.lpstrFindWhat = bufFind;
 	fr.wFindWhatLen = 100; 
+
 	// поиск от текущего положения каретки в тексте до конца документа
 	fr.Flags = FR_DOWN;
+	
 	// отображаем диалог Найти
-	hFR = FindText(&fr);
+	hFindReplace = FindText(&fr);
 }
 
 void CMainDialog::OnReplace()
 {
 	// Проверим, открыто ли окно замены
-	if(hFR)
+	if(hFindReplace)
 	{
 		// Активизируем окно замены
-		SetForegroundWindow(hFR);
+		SetForegroundWindow(hFindReplace);
 		return;
 	}
 	// обнуляем структуру FINDREPLACE
 	ZeroMemory(&fr, sizeof(fr));
 	DWORD start, end;
+
 	// обнуляем буфер, предназначенный для хранения замещающей строки 
 	ZeroMemory(&bufReplace, sizeof(bufReplace));
+	
 	// получим весь текст, находяшийся в текстовом поле ввода
 	GetWindowText(hEdit, alltext, 65536);
+	
 	// получим границы выделения фрагмента текста
 	SendMessage(hEdit, EM_GETSEL, WPARAM(&start), LPARAM(&end));
+	
 	// скопируем в буфер выделенный фрагмент текста
 	_tcsncpy(bufFind, alltext + start, end - start);
 	bufFind[end - start] = TEXT('\0');
 	fr.lStructSize = sizeof(fr);
+	
 	// главный диалог является окном-владелецем
 	fr.hwndOwner = hDialog;
+	
 	// указатель на буфер, содержащий строку для поиска
 	fr.lpstrFindWhat = bufFind;
 	fr.wFindWhatLen = 100; 
+	
 	// указатель на буфер, содержащий строку для замены
 	fr.lpstrReplaceWith = bufReplace;
 	fr.wReplaceWithLen = 100;
+	
 	// поиск от текущего положения каретки в тексте до конца документа
 	fr.Flags = FR_DOWN;
+	
 	// отображаем диалог Заменить
-	hFR = ReplaceText(&fr);
+	hFindReplace = ReplaceText(&fr);
 }
 
 void CMainDialog::MessageFromFindReplace()
 {
-	if(fr.Flags & FR_REPLACEALL) 
+	if (fr.Flags & FR_REPLACEALL)
+	{
 		MessageBox(hDialog, TEXT("Нажата кнопка \"Заменить всё\""), TEXT("Поиск и замена"), MB_OK | MB_ICONINFORMATION);
+	}
 
 	if(fr.Flags & FR_REPLACE)
 	{
@@ -131,7 +152,7 @@ void CMainDialog::MessageFromFindReplace()
 
 	if(fr.Flags&FR_DIALOGTERM)
 	{
-		hFR = NULL;
+		hFindReplace = NULL;
 		MessageBox(hDialog, TEXT("Закрывается диалог поиска и замены!"), TEXT("Поиск и замена"), MB_OK | MB_ICONINFORMATION);
 		return;
 	}

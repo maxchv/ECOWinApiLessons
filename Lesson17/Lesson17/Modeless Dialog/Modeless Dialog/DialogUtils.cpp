@@ -5,6 +5,7 @@ bool DialogUtils::Text2Text(HWND hEditFrom, HWND hEditTo)
 {	
 	int length = Edit_GetTextLength(hEditFrom);
 	std::unique_ptr<TCHAR> buffer(new TCHAR[length + 1]);
+	
 	ZeroMemory(buffer.get(), length + 1);
 	
 	// Получаем текст с текстового поля ввода

@@ -47,7 +47,7 @@ void CMainDialog::COpenFile(HWND hwnd)
 			while (!feof(f))
 			{
 				fgetws(buff, 256, f);	
-				lstrcat(buff, TEXT("\r\n"));
+				//lstrcat(buff, TEXT("\r\n"));
 				int pos = SendDlgItemMessage(hwnd, IDC_EDIT1, WM_GETTEXTLENGTH, NULL, NULL);
 				SendDlgItemMessage(hwnd, IDC_EDIT1, EM_SETSEL, pos, pos);
 				SendDlgItemMessage(hwnd, IDC_EDIT1, EM_REPLACESEL, NULL, LPARAM(buff));
@@ -78,12 +78,14 @@ void CMainDialog::CWriteFile(HWND hwnd)
 
 	if (GetSaveFileName(&ofn))
 	{		
-		FILE* f;
-		TCHAR text[256];
-		SendDlgItemMessage(hwnd, IDC_EDIT1, WM_GETTEXT, 256, LPARAM(text));
+		FILE* f;		
+		int len = Edit_GetTextLength(GetDlgItem(hwnd, IDC_EDIT1));
+		std::unique_ptr<TCHAR> buff(new TCHAR[len+1]);
+
+		SendDlgItemMessage(hwnd, IDC_EDIT1, WM_GETTEXT, len+1, LPARAM(buff.get()));
 		if (!_wfopen_s(&f, filename, TEXT("w, ccs=UTF-8")))
 		{
-			_fwprintf_p(f, text);
+			_fwprintf_p(f, buff.get());
 		}
 		fclose(f);
 	}

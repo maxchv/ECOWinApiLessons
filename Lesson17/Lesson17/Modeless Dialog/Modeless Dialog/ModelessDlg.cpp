@@ -25,9 +25,10 @@ CModelessDialog* CModelessDialog::getInstance()
 void CModelessDialog::Create(HWND hParent)
 {
 	hAddDialog = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG2), hParent, CModelessDialog::DlgProc);
+	
 	// Отображаем окно	
 	ShowWindow(hAddDialog, SW_RESTORE);
-
+	
 	//Активизируем дополнительное немодальное окно
 	SetForegroundWindow(hAddDialog);
 }

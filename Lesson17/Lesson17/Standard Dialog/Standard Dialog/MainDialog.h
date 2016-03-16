@@ -15,6 +15,6 @@ public:
 	void OnReplace();
 	void MessageFromFindReplace();
 	TCHAR bufFind[100], alltext[65536], bufReplace[100];
-	HWND hEdit, hFR, hDialog;
+	HWND hEdit, hFindReplace, hDialog;
 	FINDREPLACE fr;
 };

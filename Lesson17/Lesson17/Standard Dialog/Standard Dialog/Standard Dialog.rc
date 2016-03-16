@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Ukrainian resources
+// Ukrainian (Ukraine) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
-#ifdef _WIN32
 LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 #pragma code_page(1251)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -59,7 +57,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     PUSHBUTTON      "Найти",IDC_FIND,50,7,57,19,0,WS_EX_DLGMODALFRAME
     PUSHBUTTON      "Заменить",IDC_REPLACE,127,7,57,19,0,WS_EX_DLGMODALFRAME
-    EDITTEXT        IDC_EDIT1,7,27,221,95,ES_MULTILINE | ES_AUTOHSCROLL | ES_WANTRETURN
+    EDITTEXT        IDC_EDIT1,7,27,221,95,ES_MULTILINE | ES_AUTOHSCROLL | ES_NOHIDESEL | ES_WANTRETURN
 END
 
 
@@ -69,7 +67,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DIALOG1, DIALOG
     BEGIN
@@ -81,7 +79,18 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Ukrainian resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Ukrainian (Ukraine) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

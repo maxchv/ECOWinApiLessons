@@ -32,7 +32,7 @@ void CMainModalDialog::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeN
 	switch(id)
 	{
 		case IDC_BUTTON1:
-		{			
+		{	
 			// ѕроверим, открыто ли дополнительное немодальное окно
 			if (CModelessDialog::getDlgHWND() != NULL)
 			{
@@ -44,7 +44,7 @@ void CMainModalDialog::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeN
 				CModelessDialog* dlg = CModelessDialog::getInstance();
 				// —оздаем немодальное диалоговое окно		
 				CModelessDialog::Create(hwnd);
-				
+								
 				// ѕолучаем текст с текстового пол€ ввода				
 				// ќтображаем текст на статике дополнительного диалога
 				DialogUtils::Text2Text(hEdit1, dlg->getStaticHWND());
