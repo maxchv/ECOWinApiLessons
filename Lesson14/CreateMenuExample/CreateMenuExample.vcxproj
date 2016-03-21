@@ -89,6 +89,9 @@
     <ClCompile Include="DialogWindow.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\open.bmp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
