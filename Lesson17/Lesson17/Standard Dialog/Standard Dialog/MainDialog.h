@@ -1,20 +1,21 @@
 #pragma once
 #include "header.h"
 
-class CMainDialog
+class MainDialog
 {
+	void InitFindReplace();
 public:
-	CMainDialog();
-	~CMainDialog();
+	MainDialog();
+	~MainDialog();
 	static BOOL CALLBACK DlgProc(HWND hWnd, UINT mes, WPARAM wp, LPARAM lp);
-	static CMainDialog* ptr;
+	static MainDialog* _this;
 	void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify);
 	void Cls_OnClose(HWND hwnd);
 	BOOL Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam);
 	void OnFind();
-	void OnReplace();
+	void OnReplace();	
 	void MessageFromFindReplace();
-	TCHAR bufFind[100], alltext[65536], bufReplace[100];
-	HWND hEdit, hFindReplace, hDialog;
+	TCHAR bufFind[FINDTEXTLENTH], alltext[TEXTLENGTH], bufReplace[FINDTEXTLENTH];
+	HWND hEdit, hFindReplace, hDialog, hStatus;
 	FINDREPLACE fr;
 };

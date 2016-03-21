@@ -1,186 +1,181 @@
 #include "MainDialog.h"
 
-// идентификатор зарегистрированного сообщения FINDMSGSTRING
-UINT WM_FR = RegisterWindowMessage(FINDMSGSTRING);
+// регистрация сообщения для диалогового окна FindText and ReplaceText
+UINT WM_FINDREPLACE = RegisterWindowMessage(FINDMSGSTRING);
 
-CMainDialog* CMainDialog::ptr = NULL;
+MainDialog* MainDialog::_this = NULL;
 
-CMainDialog::CMainDialog(void)
+// инициализация структуры перед поиском/заменой
+void MainDialog::InitFindReplace()
 {
-	ptr = this;
-	hFindReplace = NULL;
+	// обнуление структуры
+	ZeroMemory(&fr, sizeof(fr));
+
+	fr.hInstance = GetModuleHandle(0);
+	fr.hwndOwner = hDialog;
+
+	// весь введенный текст в EDIT
+	GetWindowText(hEdit, alltext, TEXTLENGTH);
+	DWORD start, end;
+	// получаем границы выделенного текста в EDITe
+	SendMessage(hEdit, EM_GETSEL, WPARAM(&start), LPARAM(&end));
+	// копируем текст в буфер
+	_tcsncpy(bufFind, alltext + start, end - start);
+	bufFind[end - start] = TEXT('\0');
+	// строка для поиска
+	fr.lpstrFindWhat = bufFind;
+
+	fr.wFindWhatLen = FINDTEXTLENTH;
+	fr.lStructSize = sizeof(FINDREPLACE);
+
+	fr.Flags = FR_DOWN;
+}
+
+MainDialog::MainDialog(void)
+{
+	_this = this;
+	hFindReplace = NULL;	
 	ZeroMemory(&fr, sizeof(fr));
 }
 
-CMainDialog::~CMainDialog(void){}
+MainDialog::~MainDialog(void){}
 
-void CMainDialog::Cls_OnClose(HWND hwnd)
+void MainDialog::Cls_OnClose(HWND hwnd)
 {
 	EndDialog(hwnd, 0);
 }
 
-BOOL CMainDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam) 
+BOOL MainDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam) 
 {
 	hDialog = hwnd;
 	hEdit = GetDlgItem(hwnd, IDC_EDIT1);
 	SetWindowText(hEdit, TEXT("— Как по английски работа?\r\n— Job\r\n — А работать?\r\n— Вjobывать"));
+
+	hStatus = CreateStatusWindow(WS_VISIBLE | WS_CHILD | CCS_BOTTOM, TEXT(""), hwnd, WM_USER);
+	RECT r = { 0 };
+	GetClientRect(hwnd, &r);
+	int half = r.right / 2;
+	int parts[4] = { half / 2, half, half * 2 / 3, -1 };
+	SendMessage(hStatus, SB_SETPARTS, 4, LPARAM(parts));
+	SendMessage(hStatus, SB_SETTEXT, 0, LPARAM(TEXT("Down")));
+	SendMessage(hStatus, SB_SETTEXT, 1, LPARAM(TEXT(" ")));
+	SendMessage(hStatus, SB_SETTEXT, 2, LPARAM(TEXT(" ")));
+
 	return TRUE;
 }
 
-void CMainDialog::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+void MainDialog::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
-	if(id == IDC_FIND)
-		OnFind();
-	else if(id == IDC_REPLACE)
-		OnReplace();
+	switch (id)
+	{
+	case IDC_FIND:
+		OnFind(); // нажата кнопка Найти
+		break;
+	case IDC_REPLACE:
+		OnReplace(); // нажата кнопка Заменить
+		break;	
+	case IDC_BUTTON3:
+		Edit_SetSel(hEdit, 0, 10);
+		Edit_ReplaceSel(hEdit, TEXT("test"));
+		break;
+	}
 }
 
-void CMainDialog::OnFind()
+void MainDialog::OnFind()
 {
-	// Проверим, открыто ли окно поиска
-	if(hFindReplace)
+	if (hFindReplace) // если окно отображается
 	{
-		//Активизируем окно поиска
 		SetForegroundWindow(hFindReplace);
-		return;
 	}
-	// обнуляем структуру FINDREPLACE
-	ZeroMemory(&fr, sizeof(fr));
-	DWORD start, end;
-	// получим весь текст, находяшийся в текстовом поле ввода	
-	GetWindowText(hEdit, alltext, 65536);	
-
-	// получим границы выделения фрагмента текста
-	//SendMessage(hEdit, EM_GETSEL, WPARAM(&start), LPARAM(&end));
-	DWORD selected = Edit_GetSel(hEdit);
-	start = LOWORD(selected);
-	end = HIWORD(selected);
-
-	// скопируем в буфер выделенный фрагмент текста
-	_tcsncpy(bufFind, alltext+start, end-start);	
-	bufFind[end - start] = TEXT('\0');
-
-	fr.lStructSize = sizeof(fr);
-	
-	// главный диалог является окном-владелецем
-	fr.hwndOwner = hDialog;
-
-	// указатель на буфер, содержащий строку для поиска
-	fr.lpstrFindWhat = bufFind;
-	fr.wFindWhatLen = 100; 
-
-	// поиск от текущего положения каретки в тексте до конца документа
-	fr.Flags = FR_DOWN;
-	
-	// отображаем диалог Найти
-	hFindReplace = FindText(&fr);
+	else // создаем окно
+	{
+		InitFindReplace();
+		hFindReplace = FindText(&fr);
+	}
 }
 
-void CMainDialog::OnReplace()
+void MainDialog::OnReplace()
 {
-	// Проверим, открыто ли окно замены
-	if(hFindReplace)
+	if (hFindReplace) // если окно отображается
 	{
-		// Активизируем окно замены
 		SetForegroundWindow(hFindReplace);
-		return;
 	}
-	// обнуляем структуру FINDREPLACE
-	ZeroMemory(&fr, sizeof(fr));
-	DWORD start, end;
-
-	// обнуляем буфер, предназначенный для хранения замещающей строки 
-	ZeroMemory(&bufReplace, sizeof(bufReplace));
-	
-	// получим весь текст, находяшийся в текстовом поле ввода
-	GetWindowText(hEdit, alltext, 65536);
-	
-	// получим границы выделения фрагмента текста
-	SendMessage(hEdit, EM_GETSEL, WPARAM(&start), LPARAM(&end));
-	
-	// скопируем в буфер выделенный фрагмент текста
-	_tcsncpy(bufFind, alltext + start, end - start);
-	bufFind[end - start] = TEXT('\0');
-	fr.lStructSize = sizeof(fr);
-	
-	// главный диалог является окном-владелецем
-	fr.hwndOwner = hDialog;
-	
-	// указатель на буфер, содержащий строку для поиска
-	fr.lpstrFindWhat = bufFind;
-	fr.wFindWhatLen = 100; 
-	
-	// указатель на буфер, содержащий строку для замены
-	fr.lpstrReplaceWith = bufReplace;
-	fr.wReplaceWithLen = 100;
-	
-	// поиск от текущего положения каретки в тексте до конца документа
-	fr.Flags = FR_DOWN;
-	
-	// отображаем диалог Заменить
-	hFindReplace = ReplaceText(&fr);
+	else // создаем окно
+	{
+		InitFindReplace();
+		ZeroMemory(bufReplace, FINDTEXTLENTH);
+		fr.lpstrReplaceWith = bufReplace;
+		fr.wReplaceWithLen = FINDTEXTLENTH;
+		hFindReplace = ReplaceText(&fr);
+	}
 }
 
-void CMainDialog::MessageFromFindReplace()
+void MainDialog::MessageFromFindReplace()
 {
-	if (fr.Flags & FR_REPLACEALL)
+	if (fr.Flags & FR_DOWN) {
+		SendMessage(hStatus, SB_SETTEXT, 0, LPARAM(TEXT("Down")));
+	}
+	else 
 	{
-		MessageBox(hDialog, TEXT("Нажата кнопка \"Заменить всё\""), TEXT("Поиск и замена"), MB_OK | MB_ICONINFORMATION);
+		SendMessage(hStatus, SB_SETTEXT, 0, LPARAM(TEXT("Up")));
 	}
 
-	if(fr.Flags & FR_REPLACE)
-	{
-		MessageBox(hDialog, TEXT("Нажата кнопка \"Заменить\""), TEXT("Поиск и замена"), MB_OK | MB_ICONINFORMATION);
-		// заменяем выделенный фрагмент текста на строку, находящуюся в буфере bufReplace
-		SendMessage(hEdit, EM_REPLACESEL, WPARAM(TRUE),(LPARAM)bufReplace);
+	if (fr.Flags & FR_FINDNEXT) {
+		SendMessage(hStatus, SB_SETTEXT, 1, LPARAM(TEXT("FindNext")));
+		GetWindowText(hEdit, alltext, TEXTLENGTH);
+
+		DWORD selStart, selEnd;
+		SendMessage(hEdit, EM_GETSEL, WPARAM(&selStart), LPARAM(&selEnd));
+
+		TCHAR * searchStart = alltext;// +selEnd;
+
+		TCHAR *start_word = _tcsstr(searchStart, bufFind); // поиск строки
+		int len = lstrlen(bufFind);  // длина искомого слова
+		DWORD start_idx, end_idx;   
+		start_idx = start_word - alltext; // начало слова в строке alltext
+		end_idx = start_idx + len;
+		SendMessage(hEdit, EM_SETSEL, start_idx, end_idx);
+		//Edit_ReplaceSel(hEdit, TEXT("test"));
 	}
 
-	if(fr.Flags & FR_FINDNEXT)
+	if (fr.Flags & FR_REPLACE) 
 	{
-		MessageBox(hDialog, TEXT("Нажата кнопка \"Найти далее\""), TEXT("Поиск и замена"), MB_OK | MB_ICONINFORMATION);
-		DWORD Start, End;
-		// выполняем поиск искомой строки
-		TCHAR * p = _tcsstr(alltext, bufFind);
-		if(p)
-		{
-			Start = p - alltext;
-			End = Start + _tcslen(bufFind);
-			// выделяем найденную строку
-			SendMessage(hEdit, EM_SETSEL, Start, End); 
-		}
+		SendMessage(hStatus, SB_SETTEXT, 1, LPARAM(bufReplace));
+		
+		SendMessage(hEdit, EM_REPLACESEL, TRUE, LPARAM(bufReplace));
 	}
 
-	if(fr.Flags&FR_DIALOGTERM)
+	if (fr.Flags & FR_MATCHCASE) {
+		SendMessage(hStatus, SB_SETTEXT, 2, LPARAM(TEXT("MatchCase")));
+	}
+
+	if (fr.Flags & FR_WHOLEWORD) {
+		SendMessage(hStatus, SB_SETTEXT, 3, LPARAM(TEXT("WholeWord")));
+	}
+
+	if (fr.Flags & FR_DIALOGTERM)
 	{
 		hFindReplace = NULL;
-		MessageBox(hDialog, TEXT("Закрывается диалог поиска и замены!"), TEXT("Поиск и замена"), MB_OK | MB_ICONINFORMATION);
-		return;
 	}
-
-	if(fr.Flags & FR_MATCHCASE)
-		MessageBox(hDialog, TEXT("Установлен флажок регистрозависимости"), TEXT("Поиск и замена"), MB_OK | MB_ICONINFORMATION);
-
-	if(fr.Flags & FR_WHOLEWORD)
-		MessageBox(hDialog, TEXT("Установлен флажок поиска слова целиком"), TEXT("Поиск и замена"), MB_OK | MB_ICONINFORMATION);
-
-	if(fr.Flags & FR_DOWN)
-		MessageBox(hDialog, TEXT("Выбран режим поиска в направлении вниз"), TEXT("Поиск и замена"), MB_OK | MB_ICONINFORMATION);
-	else
-		MessageBox(hDialog, TEXT("Выбран режим поиска в направлении вверх"), TEXT("Поиск и замена"), MB_OK | MB_ICONINFORMATION);
-	
 }
 
 
-BOOL CALLBACK CMainDialog::DlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+BOOL CALLBACK MainDialog::DlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch(message)
 	{
-		HANDLE_MSG(hwnd, WM_CLOSE, ptr->Cls_OnClose);
-		HANDLE_MSG(hwnd, WM_INITDIALOG, ptr->Cls_OnInitDialog);
-		HANDLE_MSG(hwnd, WM_COMMAND, ptr->Cls_OnCommand);
+		HANDLE_MSG(hwnd, WM_CLOSE, _this->Cls_OnClose);
+		HANDLE_MSG(hwnd, WM_INITDIALOG, _this->Cls_OnInitDialog);
+		HANDLE_MSG(hwnd, WM_COMMAND, _this->Cls_OnCommand);
 	}
-	// обработка сообщений, посылаемых из немодального диалогового окна
-	if(message == WM_FR)
-		ptr->MessageFromFindReplace();
+	
+	if (WM_FINDREPLACE) 
+	{
+		// если что-то произошло в дополнительном окне, то 
+		// в основное коно приходит зарегестрированное 
+		// сообщение WM_FINDREPLACE
+		_this->MessageFromFindReplace();
+	}
+
 	return FALSE;
 }

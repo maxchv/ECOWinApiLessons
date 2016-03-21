@@ -57,7 +57,7 @@
 	функции API ShowWindow);
 
 Для активизации дополнительного немодального окна 
-применяется функция WinA-PI SetForegroundWindow.
+применяется функция WinAPI SetForegroundWindow.
 
 	BOOL SetForegroundWindow(HWND hWnd);
 
@@ -192,7 +192,8 @@ typedef struct {
 FINDMSGSTRING.
 
 UINT RegisterWindowMessage(
-	LPCTSTR lpString // указатель на строку, идентифицирующую сообщение, // которое необходимо зарегистрировать
+	LPCTSTR lpString // указатель на строку, идентифицирующую сообщение, 
+					 // которое необходимо зарегистрировать
 	);
 
 В дальнейшем можно использовать этот идентификатор, чтобы 
