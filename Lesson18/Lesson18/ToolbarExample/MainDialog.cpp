@@ -31,32 +31,40 @@ BOOL MainDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	// использовать структуру TBBUTTON дл€ хранени€ данных кнопок панели инструментов
 	SendMessage(hToolbar, TB_BUTTONSTRUCTSIZE, WPARAM(sizeof(TBBUTTON)), 0);
 	
+	// «адать размер изображений в панели инструментов
+	SendMessage(hToolbar, TB_SETBITMAPSIZE, 0, (LPARAM)MAKELONG(16, 15));
+	
 	// —оздание и настройка структуры дл€ панели управлени€
 	// ”казать исочник изображений дл€ панели управлени€
 	TBADDBITMAP tbAddBmp = { 0 };
 	tbAddBmp.hInst = GetModuleHandle(0);// HINST_COMMCTRL;     // стандартные изображени€
-	tbAddBmp.nID = IDR_TOOLBAR1;// IDB_STD_SMALL_COLOR;  
+	tbAddBmp.nID = IDB_BITMAP2;// IDB_STD_SMALL_COLOR;  
 
-	SendMessage(hToolbar, TB_ADDBITMAP, 0, (LPARAM)&tbAddBmp);
+	SendMessage(hToolbar, TB_ADDBITMAP, 6, (LPARAM)&tbAddBmp);
 
 	// «аполнение панели данными
-	TBBUTTON buttons[] = {
-		//{STD_FILENEW, ID_FILE_NEW, TBSTATE_ENABLED, BTNS_AUTOSIZE, { 0 }, 0, (INT_PTR)TEXT("New")},
-		{ 0, ID_FILE_NEW, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("New") },
-		//{STD_FILEOPEN, ID_FILE_OPEN, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Open") },
-		{ 1, ID_FILE_OPEN, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Open") },
-		//{STD_FILESAVE, ID_FILE_SAVE, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Save") },
-		{ 2, ID_FILE_SAVE, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Save") },
+	TBBUTTON systemButtons[] = {
+		{STD_FILENEW, ID_FILE_NEW, TBSTATE_ENABLED, BTNS_AUTOSIZE, { 0 }, 0, (INT_PTR)TEXT("New")},		
+		{STD_FILEOPEN, ID_FILE_OPEN, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Open") },		
+		{STD_FILESAVE, ID_FILE_SAVE, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Save") },		
 		{ 0, NULL, 0, TBSTYLE_SEP, { 0 }, 0, (INT_PTR)TEXT("") },
-		//{ STD_COPY, ID_EDIT_COPY, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Copy") },
-		{ 3, ID_EDIT_COPY, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Copy") },
-		//{ STD_CUT, ID_EDIT_CUT, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Cut") },
-		{ 4, ID_EDIT_CUT, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Cut") },
-		//{ STD_PASTE, ID_EDIT_PASTE, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Paste") }
-		{ 5, ID_EDIT_PASTE, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Paste") }
+		{ STD_COPY, ID_EDIT_COPY, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Copy") },		
+		{ STD_CUT, ID_EDIT_CUT, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Cut") },		
+		{ STD_PASTE, ID_EDIT_PASTE, TBSTATE_ENABLED, BTNS_AUTOSIZE,{ 0 }, 0, (INT_PTR)TEXT("Paste") }		
+	};
+
+	TBBUTTON buttons[] = {	
+		{ 0, ID_FILE_NEW, TBSTATE_ENABLED, TBSTYLE_BUTTON,{ 0 }, 0, (INT_PTR)TEXT("New") },		
+		{ 1, ID_FILE_OPEN, TBSTATE_ENABLED, TBSTYLE_BUTTON,{ 0 }, 0, (INT_PTR)TEXT("Open") },		
+		{ 2, ID_FILE_SAVE, TBSTATE_ENABLED, TBSTYLE_BUTTON,{ 0 }, 0, (INT_PTR)TEXT("Save") },
+		{ 0, NULL, 0, TBSTYLE_SEP,{ 0 }, 0, (INT_PTR)TEXT("") },		
+		{ 3, ID_EDIT_COPY, TBSTATE_ENABLED, TBSTYLE_BUTTON,{ 0 }, 0, (INT_PTR)TEXT("Copy") },		
+		{ 4, ID_EDIT_CUT, TBSTATE_ENABLED, TBSTYLE_BUTTON,{ 0 }, 0, (INT_PTR)TEXT("Cut") },		
+		{ 5, ID_EDIT_PASTE, TBSTATE_ENABLED, TBSTYLE_BUTTON,{ 0 }, 0, (INT_PTR)TEXT("Paste") }
 	};
 
 	int nButtons = sizeof(buttons) / sizeof(buttons[0]);
+		
 	// ”становка панели
 	SendMessage(hToolbar, TB_ADDBUTTONS, nButtons, (LPARAM)buttons);
 

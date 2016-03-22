@@ -15,13 +15,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -31,15 +29,25 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON1               ICON                    "res\\error.ico"
+
 IDI_ICON2               ICON                    "res\\Gear.ico"
+
 IDI_ICON3               ICON                    "res\\info.ico"
+
 IDI_ICON4               ICON                    "res\\Likely_unavail.ico"
+
 IDI_ICON5               ICON                    "res\\New.ico"
+
 IDI_ICON6               ICON                    "res\\preferences.ico"
+
 IDI_ICON7               ICON                    "res\\share_overlay.ico"
+
 IDI_ICON8               ICON                    "res\\Shortcut.ico"
+
 IDI_ICON9               ICON                    "res\\UAC_shield.ico"
+
 IDI_ICON10              ICON                    "res\\warning.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -76,6 +84,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Animation"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    PUSHBUTTON      "Play",IDC_BTN_PLAY,23,147,50,14
 END
 
 IDD_COMBOBOXEXDIALOG DIALOGEX 0, 0, 260, 183
@@ -197,7 +206,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_MAINDIALOG, DIALOG
     BEGIN
@@ -379,7 +388,8 @@ END
 //
 
 IDR_UPLOAD_AVI          AVI                     "res\\upload.avi"
-#endif    // English (U.S.) resources
+
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

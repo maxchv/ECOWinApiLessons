@@ -61,7 +61,7 @@ void OnClose(HWND hWnd)
 
 #define IDC_ANIMATION		990
 
-
+HWND hAnimate;
 //
 //   FUNCTION: OnInitAnimationDialog(HWND, HWND, LPARAM)
 //
@@ -79,7 +79,7 @@ BOOL OnInitAnimationDialog(HWND hWnd, HWND hWndFocus, LPARAM lParam)
 
     // Create the animation control.
     RECT rc = { 20, 20, 280, 60 };
-    HWND hAnimate = CreateWindowEx(0, ANIMATE_CLASS, 0, 
+    hAnimate = CreateWindowEx(0, ANIMATE_CLASS, 0, 
         ACS_TIMER | ACS_AUTOPLAY | ACS_TRANSPARENT | WS_CHILD | WS_VISIBLE, 
         rc.left, rc.top, rc.right, rc.bottom, 
         hWnd, reinterpret_cast<HMENU>(IDC_ANIMATION), g_hInst, 0);
@@ -87,25 +87,37 @@ BOOL OnInitAnimationDialog(HWND hWnd, HWND hWndFocus, LPARAM lParam)
     {
         return FALSE;
     }
-
-    // Open the AVI clip and display its first frame in the animation control.
-    if (0 == SendMessage(hAnimate, ACM_OPEN, static_cast<WPARAM>(0), 
-        reinterpret_cast<LPARAM>(MAKEINTRESOURCE(IDR_UPLOAD_AVI))))
-    {
-        return FALSE;
-    }
-
-    // Plays the AVI clip in the animation control.
-    if (0 == SendMessage(hAnimate, ACM_PLAY, static_cast<WPARAM>(-1), 
-        MAKELONG(/*from frame*/0, /*to frame*/-1)))
-    {
-        return FALSE;
-    }
-
+        
     return TRUE;
 }
 
+void OnAnimationCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
+{
+    static bool playing = false;
+    switch (id)
+    {
+    case IDC_BTN_PLAY:
+        if (!playing)
+        {
+            // Open the AVI clip and display its first frame in the animation control.
+            SendMessage(hAnimate, ACM_OPEN, static_cast<WPARAM>(0),
+                reinterpret_cast<LPARAM>(MAKEINTRESOURCE(IDR_UPLOAD_AVI)));
 
+            // Plays the AVI clip in the animation control.
+            SendMessage(hAnimate, ACM_PLAY, static_cast<WPARAM>(-1),
+                MAKELONG(/*from frame*/0, /*to frame*/-1));
+            playing = true;
+            Button_SetText(hwndCtl, TEXT("Stop"));
+        }
+        else
+        {
+            SendMessage(hAnimate, ACM_STOP, 0, 0);
+            playing = false;
+            Button_SetText(hwndCtl, TEXT("Play"));
+        }
+        break;
+    }
+}
 //
 //  FUNCTION: AnimationDlgProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -117,6 +129,8 @@ INT_PTR CALLBACK AnimationDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
     {
         // Handle the WM_INITDIALOG message in OnInitAnimationDialog
         HANDLE_MSG (hWnd, WM_INITDIALOG, OnInitAnimationDialog);
+
+        HANDLE_MSG(hWnd, WM_COMMAND, OnAnimationCommand);
 
         // Handle the WM_CLOSE message in OnClose
         HANDLE_MSG (hWnd, WM_CLOSE, OnClose);

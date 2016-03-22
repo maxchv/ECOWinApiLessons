@@ -45,5 +45,8 @@
     <Image Include="bmp00001.bmp">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="img00022.bmp">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>
