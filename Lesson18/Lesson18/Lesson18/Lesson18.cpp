@@ -65,7 +65,7 @@ CCS_TOP				Ёлемент управлени€ должен быть расположен в верхней части внутренней
 https://msdn.microsoft.com/en-us/library/windows/desktop/bb775498(v=vs.85).aspx#CCS_ADJUSTABLE
 
 ѕример:
-	HWND hToolbar = CreateWindowEx(0, TOOLBARCLASSNAME, 0,
+	HWND hToolbar = CreateWindow(TOOLBARCLASSNAME, 0,
 		TBSTYLE_FLAT | CCS_ADJUSTABLE | CCS_NODIVIDER | WS_CHILD | WS_VISIBLE,
 		0, 0, 0, 0,
 		hWnd, (HMENU)IDC_TOOLBAR, GetModuleHandle(0), 0);
@@ -177,20 +177,19 @@ TBSTYLE_SEP			–азделитель между группами кнопок
 	const int numButtons = 7;
 	TBBUTTON tbButtons[numButtons] =
 	{
-		{ MAKELONG(STD_FILENEW, 0), NULL, TBSTATE_ENABLED,
-			BTNS_AUTOSIZE, {0}, 0, (INT_PTR)TEXT("New") },
-		{ MAKELONG(STD_FILEOPEN, 0), NULL, TBSTATE_ENABLED,
-			BTNS_AUTOSIZE, {0}, 0, (INT_PTR)TEXT("Open") },
-		{ MAKELONG(STD_FILESAVE, 0), NULL, 0,
-			BTNS_AUTOSIZE, {0}, 0, (INT_PTR)TEXT("Save") },
-		{ MAKELONG(0, 0), NULL, 0,
-			TBSTYLE_SEP, {0}, 0, (INT_PTR)TEXT("") }, // разделитель
-		{ MAKELONG(STD_COPY, 0), NULL, TBSTATE_ENABLED,
-			BTNS_AUTOSIZE, {0}, 0, (INT_PTR)TEXT("Copy") },
-		{ MAKELONG(STD_CUT, 0), NULL, TBSTATE_ENABLED,
-			BTNS_AUTOSIZE, {0}, 0, (INT_PTR)TEXT("Cut") },
-		{ MAKELONG(STD_PASTE, 0), NULL, TBSTATE_ENABLED,
-			BTNS_AUTOSIZE, {0}, 0, (INT_PTR)TEXT("Paste") }
+		{ STD_FILENEW, NULL, TBSTATE_ENABLED,
+			BTNS_AUTOSIZE, 0, 0, (INT_PTR)TEXT("New") },
+		{ STD_FILEOPEN, NULL, TBSTATE_ENABLED,
+			BTNS_AUTOSIZE, 0, 0, (INT_PTR)TEXT("Open") },
+		{ STD_FILESAVE, NULL, 0,
+			BTNS_AUTOSIZE, 0, 0, (INT_PTR)TEXT("Save") },
+		{ 0, NULL, 0, TBSTYLE_SEP, 0, 0, (INT_PTR)TEXT("") }, // разделитель
+		{ STD_COPY, NULL, TBSTATE_ENABLED,
+			BTNS_AUTOSIZE, 0, 0, (INT_PTR)TEXT("Copy") },
+		{ STD_CUT, NULL, TBSTATE_ENABLED,
+			BTNS_AUTOSIZE, 0, 0, (INT_PTR)TEXT("Cut") },
+		{ STD_PASTE, NULL, TBSTATE_ENABLED,
+			BTNS_AUTOSIZE, 0, 0, (INT_PTR)TEXT("Paste") }
 	};
 
 ƒобавл€ем кнопки к панели инструментов:
@@ -207,7 +206,26 @@ TBSTYLE_SEP			–азделитель между группами кнопок
 
 // Ўаг 5. ќбработать сообщени€ от панели инструментов
 /*
-—ообщени€ дл€ Toolbar
+Toolbar посылает в родительское окно сообщени€ WM_COMMAND и WM_NOTIFY.
+
+ѕараметр lParam сообщени€ WM_NOTIFY содержит указатель на структуру 
+TBNOTIFY (содержащую в самом начале структуру NMHDR ):
+	typedef struct
+	{
+		NMHDR    hdr;
+		int      iItem;
+		TBBUTTON tbButton;
+		int      cchText;
+		LPTSTR   pszText;
+	} TBNOTIFY, FAR * LPTBNOTIFY;
+
+¬ этой структуре поле iItem содержит номер кнопки, от которой пришло извещение 
+(нумераци€ кнопок начинаетс€ с нул€).
+—труктура tbButton типа TBBUTTON содержит описание кнопки.
+
+¬ поле cchText находитс€ длина текстовой строки, соответствующей кнопке. 
+јдрес этой строки передаетс€ через параметр pszText.
+
 http://frolov-lib.ru/books/bsp/v22/ch2_1.html
 */
 int _tmain(int argc, _TCHAR* argv[])
