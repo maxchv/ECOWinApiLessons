@@ -21,7 +21,7 @@ BOOL MainDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
 	// Create the Toolbar control
 	RECT rc = { 0, 0, 0, 0 };
-	hToolbar = CreateWindowEx(0, TOOLBARCLASSNAME, 0,
+	hToolbar = CreateWindow(TOOLBARCLASSNAME, 0,
 		TBSTYLE_FLAT | CCS_ADJUSTABLE | CCS_NODIVIDER | WS_CHILD | WS_VISIBLE,
 		rc.left, rc.top, rc.right, rc.bottom,
 		hwnd, (HMENU)IDC_TOOLBAR, GetModuleHandle(0), 0);
