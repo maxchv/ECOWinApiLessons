@@ -29,7 +29,7 @@ if (!InitCommonControlsEx(&iccx))
 }
 */
 
-// Шаг 2. Создание панели инструментов (CreateWindowEx)
+// Шаг 2. Создание панели инструментов (CreateWindow)
 /*
 
 Для создания используется класс окна TOOLBARCLASSNAME
@@ -197,7 +197,8 @@ TBSTYLE_SEP			Разделитель между группами кнопок
 	SendMessage(hToolbar, TB_ADDBUTTONS, numButtons, (LPARAM)tbButtons);
 */
 
-// Шаг 4. Передать сообщение автоматически разместит и отобразить панель инструментов. (TB_AUTOSIZE)
+// Шаг 4. Передать сообщение автоматически разместит и отобразить 
+//        панель инструментов. (TB_AUTOSIZE)
 /*
 
 Пример:
@@ -226,7 +227,6 @@ TBNOTIFY (содержащую в самом начале структуру NMHDR ):
 В поле cchText находится длина текстовой строки, соответствующей кнопке. 
 Адрес этой строки передается через параметр pszText.
 
-http://frolov-lib.ru/books/bsp/v22/ch2_1.html
 */
 int _tmain(int argc, _TCHAR* argv[])
 {
