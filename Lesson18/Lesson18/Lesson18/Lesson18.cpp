@@ -231,6 +231,28 @@ TBNOTIFY (содержащую в самом начале структуру NMHDR ):
 јдрес этой строки передаетс€ через параметр pszText.
 
 */
+
+// Ќестандартные панели инструментов
+/*
+    ƒл€ использовани€ нестандартных изображений в панели инструментов необходимо:
+    а) создать ресурс Toolbar
+
+    б) изменить настройки структуры
+        
+        TBADDBITMAP tbAddBmp = { 0 };
+        tbAddBmp.hInst = GetModuleHandle(0);
+        tbAddBmp.nID   = IDB_BITMAP2;			// идентификатор изображений в ресурсах
+
+    б) указать количество изображений при передаче сообщени€ TB_ADDBITMAP в аргументе wParam
+        
+        SendMessage(hToolbar, TB_ADDBITMAP, 6, (LPARAM)&tbAddBmp);
+
+    в) «адать размер отдельного изображени€ панели инструментов в битмапе
+    
+        SendMessage(hToolbar, TB_SETBITMAPSIZE, 0, (LPARAM)MAKELONG(16, 15));
+
+        https://msdn.microsoft.com/en-us/library/windows/desktop/bb787398(v=vs.85).aspx
+*/
 int _tmain(int argc, _TCHAR* argv[])
 {
     return 0;
