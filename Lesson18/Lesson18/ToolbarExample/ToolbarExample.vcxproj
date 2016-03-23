@@ -93,6 +93,7 @@
     <Image Include="bmp00001.bmp" />
     <Image Include="img00022.bmp" />
     <Image Include="toolbar1.bmp" />
+    <Image Include="toolbar2.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

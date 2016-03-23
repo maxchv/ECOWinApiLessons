@@ -48,5 +48,8 @@
     <Image Include="img00022.bmp">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="toolbar2.bmp">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>

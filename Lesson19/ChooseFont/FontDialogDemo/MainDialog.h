@@ -7,6 +7,7 @@ class MainDialog
 	BOOL Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam);
 	void Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify);
 	void Cls_OnClose(HWND hwnd);
+	LOGFONT lFont;
 
 public:
 	MainDialog();

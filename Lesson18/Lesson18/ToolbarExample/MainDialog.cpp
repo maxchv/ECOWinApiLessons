@@ -32,13 +32,13 @@ BOOL MainDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	SendMessage(hToolbar, TB_BUTTONSTRUCTSIZE, WPARAM(sizeof(TBBUTTON)), 0);
 	
 	// «адать размер изображений в панели инструментов
-	SendMessage(hToolbar, TB_SETBITMAPSIZE, 0, (LPARAM)MAKELONG(16, 15));
+	SendMessage(hToolbar, TB_SETBITMAPSIZE, 0, (LPARAM)MAKELONG(32, 32));
 	
 	// —оздание и настройка структуры дл€ панели управлени€
 	// ”казать исочник изображений дл€ панели управлени€
 	TBADDBITMAP tbAddBmp = { 0 };
 	tbAddBmp.hInst = GetModuleHandle(0);// HINST_COMMCTRL;     // стандартные изображени€
-	tbAddBmp.nID = IDB_BITMAP2;// IDB_STD_SMALL_COLOR;  
+	tbAddBmp.nID = IDR_TOOLBAR2;// IDB_STD_SMALL_COLOR;  
 
 	SendMessage(hToolbar, TB_ADDBITMAP, 6, (LPARAM)&tbAddBmp);
 
