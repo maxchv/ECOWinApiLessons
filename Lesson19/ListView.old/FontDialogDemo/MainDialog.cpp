@@ -23,8 +23,6 @@ BOOL MainDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 		OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, \
 		DEFAULT_PITCH | FF_SWISS, L"Arial");
 	SendMessage(GetDlgItem(hwnd, IDC_EDIT1), WM_SETFONT, WPARAM(hFont), TRUE);*/
-	HDC hDC = GetDC(GetDlgItem(hwnd, IDC_EDIT1));
-	SetTextColor(hDC, RGB(255, 0, 0));
 	return TRUE;
 }
 
@@ -53,8 +51,8 @@ void MainDialog::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 		{
 			hfont = CreateFontIndirect(cf.lpLogFont);			
 			SendMessage(GetDlgItem(hwnd, IDC_EDIT1), WM_SETFONT, WPARAM(hfont), TRUE);
-			
-			
+			HDC hDC = GetDC(hwndCtl);
+			SetTextColor(hDC, cf.rgbColors);
 		}
 	}
 	
