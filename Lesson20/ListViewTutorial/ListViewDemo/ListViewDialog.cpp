@@ -95,14 +95,14 @@ BOOL ListViewDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	// Выделение всей строки
 	SendMessage(hListview, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_FULLROWSELECT);
 
-	// Задаем колонки
+	// Задаем колонки - только для детального вида
 	LV_COLUMN lvCol = { 0 };
 	lvCol.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
-	lvCol.cx = 80;
+	lvCol.cx = 80; // ширина колонки
 	lvCol.pszText = TEXT("Item");
 	ListView_InsertColumn(hListview, 0, &lvCol);
 
-	//Дополнительные колонки
+	// Дополнительные колонки
 	lvCol.pszText = TEXT("SubItem1");
 	ListView_InsertColumn(hListview, 1, &lvCol);
 	lvCol.pszText = TEXT("SubItem2");
@@ -110,19 +110,20 @@ BOOL ListViewDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	lvCol.pszText = TEXT("SubItem3");
 	ListView_InsertColumn(hListview, 3, &lvCol);
 	lvCol.pszText = TEXT("SubItem4");
-	ListView_InsertColumn(hListview, 4, &lvCol);
+	//ListView_InsertColumn(hListview, 4, &lvCol);
 	lvCol.pszText = TEXT("SubItem5");
-	ListView_InsertColumn(hListview, 5, &lvCol);
+	//ListView_InsertColumn(hListview, 5, &lvCol);
 
 	// Создаем список изображений
-	int lx = GetSystemMetrics(SM_CXICON);
-	int ly = GetSystemMetrics(SM_CYICON);
+	int lx = 48;//GetSystemMetrics(SM_CXICON);
+	int ly = 48;//GetSystemMetrics(SM_CYICON);
 	hLargeIcons = ImageList_Create(lx, ly, ILC_COLOR32 | ILC_MASK, 1, 1);
 
-	int sx = GetSystemMetrics(SM_CXSMICON);
-	int sy = GetSystemMetrics(SM_CYSMICON);
+	int sx = 32;//GetSystemMetrics(SM_CXSMICON);
+	int sy = 32;//GetSystemMetrics(SM_CYSMICON);
 	hSmallIcons = ImageList_Create(sx, sy, ILC_COLOR32 | ILC_MASK, 1, 1);
 
+	// список изображений
 	TCHAR* icons[10] = {
 		TEXT("Gear.ico"),
 		TEXT("error.ico"),
@@ -163,7 +164,7 @@ BOOL ListViewDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 		
 	// Добавляем текст
 	LVITEM lvi = { 0 };
-	lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_STATE;
+	lvi.mask = LVIF_TEXT | LVIF_IMAGE;
 	TCHAR szText[200];
 	for (int i = 0; i < 10; i++)
 	{
@@ -175,8 +176,9 @@ BOOL ListViewDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 		lvi.iImage = i;
 
 		ListView_InsertItem(hListview, &lvi);
+
 		// Вспомагательный
-		for (int j = 1; j <= 5; j++)
+		for (int j = 1; j <= 3; j++)
 		{
 			swprintf_s(szText, 200, TEXT("SubItem %d"), j);
 			lvi.pszText = szText;
