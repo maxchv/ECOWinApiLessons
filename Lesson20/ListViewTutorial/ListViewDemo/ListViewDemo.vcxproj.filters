@@ -38,36 +38,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\res\error.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\res\Gear.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\res\info.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\res\Likely_unavail.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\res\New.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\res\preferences.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\res\share_overlay.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\res\Shortcut.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\res\UAC_shield.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\res\warning.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
 </Project>

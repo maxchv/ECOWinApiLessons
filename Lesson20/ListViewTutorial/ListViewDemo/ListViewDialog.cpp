@@ -16,79 +16,173 @@ ListViewDialog::~ListViewDialog()
 
 void ListViewDialog::Cls_OnClose(HWND hwnd)
 {
-	// Destroy the image lists
-	ImageList_Destroy(lvh->hLargeIcons);
-	ImageList_Destroy(lvh->hSmallIcons);
-	delete lvh;
+	// Очищаем ресурсы
+	if (hLargeIcons)
+	{
+		ImageList_Destroy(hLargeIcons);
+	}
+	if (hSmallIcons)
+	{
+		ImageList_Destroy(hSmallIcons);
+	}
 
 	EndDialog(hwnd, 0);
 }
 
+int ListViewDialog::Cls_OnNotify(HWND hwnd, int id, LPNMHDR lParam)
+{
+	switch (id)
+	{
+	case IDC_LIST1:
+		if (lParam->code == NM_DBLCLK) // Двойной клик
+		{
+			// Индекс выделенного элемента
+			int iSelect = ListView_GetNextItem(hListview, -1, LVNI_SELECTED);
+
+			if (iSelect == -1)
+			{
+				break;
+			}
+
+			TCHAR a[5];
+			_itow_s(iSelect, a, 10);
+			MessageBox(hwnd, TEXT("Clicked"), a, MB_OK);
+		}
+		break;
+	}
+	return id;
+}
+
+// Изменяем стиль окна
+void ListViewDialog::SetView(DWORD dwView)
+{
+	DWORD dwStyle = GetWindowLong(hListview, GWL_STYLE);
+
+	if ((dwStyle & LVS_TYPEMASK) != dwView)
+		SetWindowLong(hListview, GWL_STYLE, (dwStyle & ~LVS_TYPEMASK) | dwView);
+}
+
 void ListViewDialog::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
-
+	switch (id)
+	{
+	case ID_VIEW_DETAILS:
+		SetView(LV_VIEW_DETAILS);
+		break;
+	case ID_VIEW_ICON:
+		SetView(LV_VIEW_ICON);
+		break;
+	case ID_VIEW_LIST:
+		SetView(LV_VIEW_LIST);
+		break;
+	case ID_VIEW_SMALLICON:
+		SetView(LV_VIEW_SMALLICON);
+		break;
+	case ID_VIEW_TILE:
+		SetView(LV_VIEW_TILE);
+		break;
+	case ID_FILE_QUIT:
+		Cls_OnClose(hwnd);
+		break;
+	}
 }
 
 BOOL ListViewDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
-	// Create storage for struct to contain information about the listview 
-	// (window and image list handles).
-	lvh = new LVHandles();
+	// Получаем дискриптор Listview
+	hListview = GetDlgItem(hwnd, IDC_LIST1);
 
-	// Create the Listview control
-	/*RECT rc;
-	GetClientRect(hWnd, &rc);
-	lvh->hListview = CreateWindowEx(0, WC_LISTVIEW, 0,
-		LVS_ICON | WS_CHILD | WS_VISIBLE,
-		rc.left, rc.top, rc.right, rc.bottom,
-		hWnd, (HMENU)IDC_LISTVIEW, g_hInst, 0);*/
+	// Выделение всей строки
+	SendMessage(hListview, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_FULLROWSELECT);
 
-	// Create the image lists
+	// Задаем колонки
+	LV_COLUMN lvCol = { 0 };
+	lvCol.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+	lvCol.cx = 80;
+	lvCol.pszText = TEXT("Item");
+	ListView_InsertColumn(hListview, 0, &lvCol);
+
+	//Дополнительные колонки
+	lvCol.pszText = TEXT("SubItem1");
+	ListView_InsertColumn(hListview, 1, &lvCol);
+	lvCol.pszText = TEXT("SubItem2");
+	ListView_InsertColumn(hListview, 2, &lvCol);
+	lvCol.pszText = TEXT("SubItem3");
+	ListView_InsertColumn(hListview, 3, &lvCol);
+	lvCol.pszText = TEXT("SubItem4");
+	ListView_InsertColumn(hListview, 4, &lvCol);
+	lvCol.pszText = TEXT("SubItem5");
+	ListView_InsertColumn(hListview, 5, &lvCol);
+
+	// Создаем список изображений
 	int lx = GetSystemMetrics(SM_CXICON);
 	int ly = GetSystemMetrics(SM_CYICON);
-	lvh->hLargeIcons = ImageList_Create(lx, ly, ILC_COLOR32 | ILC_MASK, 1, 1);
-	
+	hLargeIcons = ImageList_Create(lx, ly, ILC_COLOR32 | ILC_MASK, 1, 1);
+
 	int sx = GetSystemMetrics(SM_CXSMICON);
 	int sy = GetSystemMetrics(SM_CYSMICON);
-	lvh->hSmallIcons = ImageList_Create(sx, sy, ILC_COLOR32 | ILC_MASK, 1, 1);
+	hSmallIcons = ImageList_Create(sx, sy, ILC_COLOR32 | ILC_MASK, 1, 1);
 
-	// Add icons to image lists
+	TCHAR* icons[10] = {
+		TEXT("Gear.ico"),
+		TEXT("error.ico"),
+		TEXT("info.ico"),
+		TEXT("Likely_unavail.ico"),
+		TEXT("New.ico"),
+		TEXT("preferences.ico"),
+		TEXT("share_overlay.ico"),
+		TEXT("Shortcut.ico"),
+		TEXT("UAC_shield.ico"),
+		TEXT("warning.ico")
+	};
+
+	// Добавляем иконки в список
 	HICON hLargeIcon, hSmallIcon;
-	for (int rid = IDI_ICON1; rid <= IDI_ICON10; rid++)
+	TCHAR path[256];
+	for (int rid = 0; rid < 10; rid++)
 	{
-		// Load and add the large icon
-		hLargeIcon = (HICON)LoadImage(g_hInst, MAKEINTRESOURCE(rid),
-			IMAGE_ICON, lx, ly, 0);
-		ImageList_AddIcon(lvh->hLargeIcons, hLargeIcon);
+		// Загружаем и добавляем большие иконки
+		lstrcpy(path, TEXT("res\\"));
+		lstrcat(path, icons[rid]);
+
+		hLargeIcon = (HICON)LoadImage(g_hInst, path,
+			IMAGE_ICON, lx, ly, LR_LOADFROMFILE);
+		ImageList_AddIcon(hLargeIcons, hLargeIcon);
 		DestroyIcon(hLargeIcon);
 
-		// Load and add the small icon
-		hSmallIcon = (HICON)LoadImage(g_hInst, MAKEINTRESOURCE(rid),
-			IMAGE_ICON, sx, sy, 0);
-		ImageList_AddIcon(lvh->hSmallIcons, hSmallIcon);
+		// То же для малых
+		hSmallIcon = (HICON)LoadImage(g_hInst, path,
+			IMAGE_ICON, sx, sy, LR_LOADFROMFILE);
+		ImageList_AddIcon(hSmallIcons, hSmallIcon);
 		DestroyIcon(hSmallIcon);
 	}
 
-	// Attach image lists to list view common control
-	ListView_SetImageList(lvh->hListview, lvh->hLargeIcons, LVSIL_NORMAL);
-	ListView_SetImageList(lvh->hListview, lvh->hSmallIcons, LVSIL_SMALL);
-
-
-	/////////////////////////////////////////////////////////////////////////
-	// Add items to the the list view common control.
-	// 
-
+	// Присоединяем список изображений к list view 
+	ListView_SetImageList(hListview, hLargeIcons, LVSIL_NORMAL);
+	ListView_SetImageList(hListview, hSmallIcons, LVSIL_SMALL);
+		
+	// Добавляем текст
 	LVITEM lvi = { 0 };
-	lvi.mask = LVIF_TEXT | LVIF_IMAGE;
+	lvi.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_STATE;
 	TCHAR szText[200];
 	for (int i = 0; i < 10; i++)
 	{
+		// Основной
 		lvi.iItem = i;
-		swprintf_s(szText, 200, L"Item  %d", i);
+		lvi.iSubItem = 0;
+		swprintf_s(szText, 200, TEXT("Item  %d"), i);
 		lvi.pszText = szText;
 		lvi.iImage = i;
 
-		SendMessage(lvh->hListview, LVM_INSERTITEM, 0, (LPARAM)&lvi);
+		ListView_InsertItem(hListview, &lvi);
+		// Вспомагательный
+		for (int j = 1; j <= 5; j++)
+		{
+			swprintf_s(szText, 200, TEXT("SubItem %d"), j);
+			lvi.pszText = szText;
+			lvi.iSubItem = j;
+			ListView_SetItem(hListview, &lvi);
+		}
 	}
 
 	return TRUE;
@@ -98,11 +192,13 @@ INT_PTR CALLBACK ListViewDialog::DlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPA
 {
 	switch (msg)
 	{
-		HANDLE_MSG(hDlg, WM_CLOSE, ListViewDialog::_this->Cls_OnClose);
+		HANDLE_MSG(hDlg, WM_CLOSE, _this->Cls_OnClose);
+		HANDLE_MSG(hDlg, WM_INITDIALOG, _this->Cls_OnInitDialog);
+		HANDLE_MSG(hDlg, WM_COMMAND, _this->Cls_OnCommand);
+		HANDLE_MSG(hDlg, WM_NOTIFY, _this->Cls_OnNotify);
 	}
 	return FALSE;
 }
-
 
 INT_PTR ListViewDialog::show()
 {
