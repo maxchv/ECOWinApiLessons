@@ -92,6 +92,8 @@ BOOL ListViewDialog::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	// Получаем дискриптор Listview
 	hListview = GetDlgItem(hwnd, IDC_LIST1);
 
+	
+
 	// Выделение всей строки
 	SendMessage(hListview, LVM_SETEXTENDEDLISTVIEWSTYLE, 0, LVS_EX_FULLROWSELECT);
 
