@@ -53,21 +53,28 @@ DWORD WINAPI Thread3(LPVOID lp)
 	return 0;
 }
 
-BOOL CMultithreadDlg::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam) 
+void CMultithreadDlg::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 {
-	HWND hList = GetDlgItem(hwnd, IDC_LIST1);
-	CreateThread(NULL, 0, Thread1, hList, 0, NULL);
-	CreateThread(NULL, 0, Thread2, hList, 0, NULL);
-	CreateThread(NULL, 0, Thread3, hList, 0, NULL);
-	return TRUE;
+	switch (id)
+	{
+	case IDC_BUTTON1:
+	{
+		HWND hList = GetDlgItem(hwnd, IDC_LIST1);
+		CreateThread(NULL, 0, Thread1, hList, 0, NULL);
+		CreateThread(NULL, 0, Thread2, hList, 0, NULL);
+		CreateThread(NULL, 0, Thread3, hList, 0, NULL);
+	}
+		break;
+	
+	}
 }
 
 BOOL CALLBACK CMultithreadDlg::DlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch(message)
 	{
-		HANDLE_MSG(hwnd, WM_CLOSE, ptr->Cls_OnClose);
-		HANDLE_MSG(hwnd, WM_INITDIALOG, ptr->Cls_OnInitDialog);
+		HANDLE_MSG(hwnd, WM_COMMAND, ptr->Cls_OnCommand);
+		HANDLE_MSG(hwnd, WM_CLOSE, ptr->Cls_OnClose);		
 	}
 	return FALSE;
 }
