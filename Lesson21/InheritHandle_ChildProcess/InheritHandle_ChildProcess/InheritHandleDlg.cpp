@@ -5,7 +5,9 @@ CInheritHandleDlg* CInheritHandleDlg::ptr = NULL;
 CInheritHandleDlg::CInheritHandleDlg(void)
 {
 	ptr = this;
-	_tcscpy(CommandLine, GetCommandLine()); // получим командную строку
+	// InheritHandle_ChildProcess.exe 101
+	lstrcpy(CommandLine, GetCommandLine()); // получим командную строку
+	MessageBox(NULL, CommandLine, TEXT("Command line"), MB_OK);
 	TCHAR seps[]   = TEXT(" ");
 	TCHAR *token, *last;
 	token = _tcstok(CommandLine, seps); // разбиваем командную строку на лексемы (разделитель "пробел")
@@ -65,7 +67,8 @@ void CInheritHandleDlg::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT code
 				LPVOID lpBuffer,			// указатель на буфер, в который будут записаны данные, 	
 											// прочтённые из файла
 				DWORD nNumberOfBytesToRead, // максимальное количество байт для чтения
-				LPDWORD lpNumberOfBytesRead, // указатель на переменную, в которую будет   	// записано фактическое количество прочтённых байт
+				LPDWORD lpNumberOfBytesRead, // указатель на переменную, в которую будет   	
+				                             // записано фактическое количество прочтённых байт
 				LPOVERLAPPED lpOverlapped	// указатель на структуру OVERLAPPED
 			);
 
