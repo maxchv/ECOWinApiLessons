@@ -28,7 +28,7 @@
         процесса по его идентификатору ?
 */
 
-// 1.	ѕотоки.ќсновные сведени€
+// 1.	ѕотоки. ќсновные сведени€
 /*
 ѕри запуске любого приложени€ операционна€ система Windows создает 
 процесс. ѕри этом процесс сам по себе не выполн€етс€.
@@ -189,13 +189,14 @@
     );
 */
 
-DWORD WINAPI ThreadProc(LPVOID lParam)
+DWORD WINAPI ThreadProc(LPVOID lpArgs)
 {
-    TCHAR* text = (TCHAR*)lParam;
+    Sleep(1000);
+    TCHAR *text = (TCHAR *)lpArgs;
     for (int i = 0; i < 10; i++)
     {
-        _tprintf(TEXT("%s\n"),text);
-        Sleep(1000);
+        _tprintf(TEXT("%s: %d\n"), lpArgs, i);
+        //Sleep(100);
     }
     return 0;
 }
@@ -203,15 +204,17 @@ DWORD WINAPI ThreadProc(LPVOID lParam)
 // ƒемо многопоточных приложений
 void ex01()
 {
-    HANDLE t[3] = { 0 };
-    t[0] = CreateThread(0, 0, ThreadProc, TEXT("Thread 1"), 0, NULL);
-    t[1] = CreateThread(0, 0, ThreadProc, TEXT("Thread 2"), 0, NULL);
-    t[2] = CreateThread(0, 0, ThreadProc, TEXT("Thread 3"), 0, NULL);
-    WaitForMultipleObjects(3, t, TRUE, INFINITE);
-    for (int i = 0; i < 3; i++)
-    {
-        CloseHandle(t[i]);
-    }
+    HANDLE threads[3];
+    DWORD idThreads[3];
+    threads[0] = CreateThread(NULL, 0, ThreadProc, TEXT("Tread #1"), NULL, &idThreads[0]);
+    SetThreadPriority(threads[0], THREAD_PRIORITY_NORMAL);
+    threads[1] = CreateThread(NULL, 1, ThreadProc, TEXT("Tread #2"), NULL, &idThreads[1]);
+    SetThreadPriority(threads[1], THREAD_PRIORITY_IDLE);
+    threads[2] = CreateThread(NULL, 2, ThreadProc, TEXT("Tread #3"), NULL, &idThreads[2]);
+    SetThreadPriority(threads[2], THREAD_PRIORITY_TIME_CRITICAL);
+
+    _tprintf(TEXT("End of main thread\n"));
+    WaitForMultipleObjects(3, threads, TRUE, INFINITE);
 }
 
 // 3.3 ѕриостановка и возобновление работы потоков
@@ -380,7 +383,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/ms686277(v=vs.85).aspx
 ƒл€ получени€ относительного приоритета потока используетс€ функ-ци€ API GetThreadPriority.
 
 int GetThreadPriority(
-HANDLE hThread // дескриптор потока
+    HANDLE hThread // дескриптор потока
 );
 
 ƒл€ получени€ дескриптора текущего процесса используетс€ функци€ API 
@@ -496,8 +499,8 @@ TLS-переменные, что увеличивает размер приложени€ и замедл€ет скорость его
 работы.
 
 ≈сли в процессе создаетс€ другой поток, система выдел€ет еще один блок 
-пам€ти дл€ хранени€ статических переменных нового пото-ка.  “олько что 
-созданный поток имеет доступ лишь к своим статиче-ским TLS-переменным, 
+пам€ти дл€ хранени€ статических переменных нового потока.  “олько что 
+созданный поток имеет доступ лишь к своим статическим TLS-переменным, 
 и не может обратитьс€ к TLS-переменным любо-го другого потока.
 
 */

@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Украинский (Украина) resources
+// Ukrainian (Ukraine) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
 LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
@@ -57,6 +57,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LISTBOX         IDC_LIST1,7,7,302,153,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Start",IDC_BUTTON1,259,163,50,14
+    PUSHBUTTON      "Resume",IDC_BUTTON2,204,163,50,14
 END
 
 
@@ -78,7 +79,18 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Украинский (Украина) resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Ukrainian (Ukraine) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
