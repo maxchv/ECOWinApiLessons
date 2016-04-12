@@ -19,7 +19,7 @@ void OnlyOneCopyDlg::Cls_OnClose(HWND hwnd)
 
 BOOL OnlyOneCopyDlg::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam) 
 {
-	TCHAR GUID[] = TEXT("[Guid('3960449B-435F4230B41ED728A3E6547D')]");
+	TCHAR GUID[] = TEXT("{CA168952-383A-4DBA-BBE4-197708D9513F}");
 	hMutex = CreateMutex(NULL, FALSE, GUID);
 	DWORD dwAnswer = WaitForSingleObject(hMutex, 0);
 	if (dwAnswer == WAIT_TIMEOUT)

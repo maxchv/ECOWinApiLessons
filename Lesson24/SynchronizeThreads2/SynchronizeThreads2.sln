@@ -1,18 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-<<<<<<< HEAD
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01.SynchronizeThreads2", "01.SynchronizeThreads2\01.SynchronizeThreads2.vcxproj", "{D73DFFA2-A057-4072-B92F-AD8C6E87D535}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|Any CPU = Release|Any CPU
-=======
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -42,37 +29,28 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|Win32 = Release|Win32
->>>>>>> refs/remotes/origin/template
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Debug|Any CPU.ActiveCfg = Debug|Win32
-<<<<<<< HEAD
-=======
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Debug|Win32.ActiveCfg = Debug|Win32
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Debug|Win32.Build.0 = Debug|Win32
->>>>>>> refs/remotes/origin/template
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Debug|x64.ActiveCfg = Debug|x64
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Debug|x64.Build.0 = Debug|x64
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Debug|x86.ActiveCfg = Debug|Win32
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Debug|x86.Build.0 = Debug|Win32
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Release|Any CPU.ActiveCfg = Release|Win32
-<<<<<<< HEAD
-=======
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Release|Win32.ActiveCfg = Release|Win32
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Release|Win32.Build.0 = Release|Win32
->>>>>>> refs/remotes/origin/template
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Release|x64.ActiveCfg = Release|x64
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Release|x64.Build.0 = Release|x64
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Release|x86.ActiveCfg = Release|Win32
 		{D73DFFA2-A057-4072-B92F-AD8C6E87D535}.Release|x86.Build.0 = Release|Win32
-<<<<<<< HEAD
-=======
 		{C0637342-809A-4089-A70E-C08016159DEE}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{C0637342-809A-4089-A70E-C08016159DEE}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{C0637342-809A-4089-A70E-C08016159DEE}.Debug|Mixed Platforms.Build.0 = Debug|Win32
@@ -153,7 +131,6 @@ Global
 		{AB4D6E44-CD34-43D5-94D8-98E79F5E6D97}.Release|x64.ActiveCfg = Release|Win32
 		{AB4D6E44-CD34-43D5-94D8-98E79F5E6D97}.Release|x86.ActiveCfg = Release|Win32
 		{AB4D6E44-CD34-43D5-94D8-98E79F5E6D97}.Release|x86.Build.0 = Release|Win32
->>>>>>> refs/remotes/origin/template
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
