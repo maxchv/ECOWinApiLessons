@@ -37,6 +37,7 @@ void ParentProcessDlg::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeN
 {
 	if(IDC_BUTTON1 == id)
 	{
+		// 1 - активный, 3 - максимальное
 		CreateSemaphore(NULL, 1, 3, TEXT("{2525FD5F-12E6-47c0-838A-7C5CA1EBD169}"));
 		STARTUPINFO st = {sizeof(st)};
 		PROCESS_INFORMATION pr;

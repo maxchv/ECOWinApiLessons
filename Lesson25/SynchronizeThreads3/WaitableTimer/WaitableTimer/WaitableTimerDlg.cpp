@@ -32,6 +32,17 @@ BOOL CWaitableTimerDlg::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lPara
 	hButton = GetDlgItem(hwnd, IDC_BUTTON1);
 	hDialog = hwnd;
 
+	SYSTEMTIME st;
+	GetLocalTime(&st); // получим текущее локальное время
+	TCHAR buff[10];
+
+	wsprintf(buff, TEXT("%d"), st.wHour);
+	SetWindowText(hEdit1, buff);
+	wsprintf(buff, TEXT("%d"), st.wMinute);
+	SetWindowText(hEdit2, buff);
+	wsprintf(buff, TEXT("%d"), st.wSecond);
+	SetWindowText(hEdit3, buff);
+
 	// Установим необходимый диапазон для счётчиков
 	SendMessage(hSpin1, UDM_SETRANGE32, 0, 23);
 	SendMessage(hSpin2, UDM_SETRANGE32, 0, 59);
@@ -42,6 +53,7 @@ BOOL CWaitableTimerDlg::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lPara
 
 	hIcon = LoadIcon(hInst, MAKEINTRESOURCE(IDI_ICON1)); // загружаем иконку
 	SetClassLong(hDialog, GCL_HICON, LONG(hIcon)); // устанавливаем иконку в главном окне приложения
+	
 	memset(pNID, 0, sizeof(NOTIFYICONDATA)); //Обнуление структуры
 	pNID->cbSize = sizeof(NOTIFYICONDATA); //размер структуры
 	pNID->hIcon = hIcon; //загружаем пользовательскую иконку

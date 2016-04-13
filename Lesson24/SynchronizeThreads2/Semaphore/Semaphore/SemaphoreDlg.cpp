@@ -30,7 +30,9 @@ BOOL CSemaphoreDlg::Cls_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 DWORD WINAPI Thread(LPVOID lp)
 {
 	HWND hEdit = (HWND) lp;
-	HANDLE h = OpenSemaphore(SEMAPHORE_ALL_ACCESS, FALSE, TEXT("{41B4DBD4-F00A-4999-BFA9-1A20D12591B1}"));
+	HANDLE h = OpenSemaphore(SEMAPHORE_ALL_ACCESS, 
+		                     FALSE, 
+		                     TEXT("{41B4DBD4-F00A-4999-BFA9-1A20D12591B1}"));
 	if (WaitForSingleObject(h, INFINITE) == WAIT_OBJECT_0)
 	{
 		for (int i = 0; i <= 50; i++)
@@ -50,7 +52,7 @@ void CSemaphoreDlg::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNoti
 {
 	if(id == IDC_BUTTON1)
 	{
-		HANDLE hSemaphore = CreateSemaphore(NULL, 3, 3, TEXT("{41B4DBD4-F00A-4999-BFA9-1A20D12591B1}"));
+		HANDLE hSemaphore = CreateSemaphore(NULL, 2, 2, TEXT("{41B4DBD4-F00A-4999-BFA9-1A20D12591B1}"));
 		HANDLE hThread = CreateThread(NULL, 0, Thread, hEdit1, 0, NULL);
 		CloseHandle(hThread);
 		hThread = CreateThread(NULL, 0, Thread, hEdit2, 0, NULL);

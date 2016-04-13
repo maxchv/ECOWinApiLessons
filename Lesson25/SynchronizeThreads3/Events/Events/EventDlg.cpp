@@ -39,7 +39,8 @@ DWORD WINAPI Thread1(LPVOID lp)
 		if(WaitForSingleObject(hEvent, INFINITE) == WAIT_OBJECT_0)
 		{
 			// Отпускаются все ждущие потоки и
-			// событие остаётся в сигнальном состоянии, т.к. событие с ручным сбросом
+			// событие остаётся в сигнальном состоянии, 
+			// т.к. событие с ручным сбросом
 			for(int i = 1; i <= 100; i++)
 			{
 				TCHAR str[10];
@@ -83,7 +84,10 @@ void CEventDlg::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 	{
 		case IDC_BUTTON1:
 			{
-				CreateEvent(NULL, TRUE /* ручной сброс события */, FALSE /* несигнальное состояние */, TEXT("{2BA7C99B-D9F7-4485-BB3F-E4735FFEF139}"));
+				CreateEvent(NULL, 
+					        TRUE /* ручной сброс события */, 
+					        FALSE /* несигнальное состояние */, 
+					        TEXT("{2BA7C99B-D9F7-4485-BB3F-E4735FFEF139}"));
 				EnableWindow(GetDlgItem(hwnd, IDC_BUTTON1), 0);
 				HANDLE h = CreateThread(NULL, 0, Thread1, hEdit1, 0, NULL);
 				CloseHandle(h);
@@ -101,7 +105,10 @@ void CEventDlg::Cls_OnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 			break;
 		case IDC_BUTTON3:
 			{
-				HANDLE hEvent = CreateEvent(NULL, FALSE /*автоматический сброс события */, FALSE /* несигнальное состояние */, TEXT("{ECA57A59-2BD7-4fb5-A132-7A00944F7CEF}"));
+				HANDLE hEvent = CreateEvent(NULL, 
+					                       FALSE /*автоматический сброс события */, 
+					                       FALSE /* несигнальное состояние */, 
+					                       TEXT("{ECA57A59-2BD7-4fb5-A132-7A00944F7CEF}"));
 				EnableWindow(GetDlgItem(hwnd, IDC_BUTTON3), FALSE);
 				HANDLE h;
 				h = CreateThread(NULL, 0, Thread2, hEdit4, 0, NULL);

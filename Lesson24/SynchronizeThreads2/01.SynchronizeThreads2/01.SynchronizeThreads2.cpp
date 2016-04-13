@@ -168,8 +168,6 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/ms685066(v=vs.85).aspx
 */
 
 // ѕример приложени€
-
-
 ///////////////////////
 //// ѕример приложений 
 ///////////////////////
@@ -180,17 +178,17 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/ms685066(v=vs.85).aspx
 раздел€емому ресурсу ограниченному количеству потоков.
 
 —емафор содержит:
-	Х	счетчик числа пользователей;
-	Х	максимальное количество ресурсов, контролируемых семафором;
-	Х	счетчик текущего числа ресурсов.
+    Х	счетчик числа пользователей;
+    Х	максимальное количество ресурсов, контролируемых семафором;
+    Х	счетчик текущего числа ресурсов.
 
 ќбъект €дра Ђсемафорї создаетс€ вызовом функции API CreateSemaphore.
 
 HANDLE CreateSemaphore(
-	PSECURITY_ATTRIBUTE psa,	// атрибуты безопасности
-	LONG lInitialCount,			// текущее количество доступных ресурсов
-	LONG lMaximumCount,			// максимальное количество ресурсов
-	PCSTR pszName				// им€ семафора
+    PSECURITY_ATTRIBUTE psa,	// атрибуты безопасности
+    LONG lInitialCount,			// текущее количество доступных ресурсов
+    LONG lMaximumCount,			// максимальное количество ресурсов
+    PCSTR pszName				// им€ семафора
 );
 https://msdn.microsoft.com/en-us/library/windows/desktop/ms682438(v=vs.85).aspx
 
@@ -215,12 +213,12 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/ms682438(v=vs.85).aspx
 вызвав функцию API OpenSemaphore.
 
 HANDLE OpenSemaphore(
-	DWORD dwDesiredAccess,	// права доступа
-							// (SEMAPHORE_ALL_ACCESS Ц полный доступ)
-	BOOL blnheritHandle,	// параметр определ€ет, будет ли наследоватьс€ 
-							// дескриптор семафора (если TRUE Ц дескриптор 
-							// наследуемый)
-	LPCTSTR pszName			// им€ семафора
+    DWORD dwDesiredAccess,	// права доступа
+                            // (SEMAPHORE_ALL_ACCESS Ц полный доступ)
+    BOOL blnheritHandle,	// параметр определ€ет, будет ли наследоватьс€ 
+                            // дескриптор семафора (если TRUE Ц дескриптор 
+                            // наследуемый)
+    LPCTSTR pszName			// им€ семафора
 );
 https://msdn.microsoft.com/en-us/library/windows/desktop/ms684326(v=vs.85).aspx
 
@@ -228,9 +226,9 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/ms684326(v=vs.85).aspx
 на величину lReleaseCount, вызыва€ функцию API ReleaseSemaphore.
 
 BOOL ReleaseSemaphore(
-	HANDLE hSemaphore,		// дескриптор семафора
-	LONG lReleaseCount,		// приращение количества доступных ресурсов
-	LPLONG lpPreviousCount	// предыдущее значение счетчика ресурсов
+    HANDLE hSemaphore,		// дескриптор семафора
+    LONG lReleaseCount,		// приращение количества доступных ресурсов
+    LPLONG lpPreviousCount	// предыдущее значение счетчика ресурсов
 );
 https://msdn.microsoft.com/en-us/library/windows/desktop/ms685071(v=vs.85).aspx
 
