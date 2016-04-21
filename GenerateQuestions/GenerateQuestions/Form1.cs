@@ -36,7 +36,7 @@ namespace GenerateQuestions
                 {
                     n[i] = rand.Next(max)+1;
                 }
-            } while (n[0] == n[1] && n[1] == n[2]);
+            } while (n[0] == n[1] || n[1] == n[2] || n[0] == n[2]);
         }
 
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
