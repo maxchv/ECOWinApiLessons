@@ -14,7 +14,7 @@ namespace GenerateQuestions
     {
         Random rand = new Random();
         int[] n = new int[3];
-        int max = 87;
+        int max = 18;
         public Form1()
         {
             InitializeComponent();
@@ -37,6 +37,21 @@ namespace GenerateQuestions
                     n[i] = rand.Next(max)+1;
                 }
             } while (n[0] == n[1] && n[1] == n[2]);
+        }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form2 dlg = new Form2(max);
+            dlg.MaxNumber = max;
+            if(dlg.ShowDialog() == DialogResult.OK)
+            {
+                max = dlg.MaxNumber;
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }
