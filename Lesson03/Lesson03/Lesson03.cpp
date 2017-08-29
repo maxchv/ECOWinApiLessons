@@ -44,18 +44,40 @@ void ex01()
 
 		Эти значения можно извлечь из lParam при помощи макросов 
 		LOWORD и HIWORD.
+		
+		https://msdn.microsoft.com/en-us/library/windows/desktop/ms645607(v=vs.85).aspx
+		
+		Important  Do not use the LOWORD or HIWORD macros to extract the x- and y- coordinates of the cursor 
+		position because these macros return incorrect results on systems with multiple monitors. 
+		Systems with multiple monitors can have negative x- and y- coordinates, and LOWORD and HIWORD treat 
+		the coordinates as unsigned quantities.
+		
+		As noted above, the x-coordinate is in the low-order short of the return value; the y-coordinate is in 
+		the high-order short (both represent signed values because they can take negative values on systems with 
+		multiple monitors). If the return value is assigned to a variable, you can use the MAKEPOINTS macro to obtain a 
+		POINTS structure from the return value. You can also use the GET_X_LPARAM or GET_Y_LPARAM macro to extract the 
+		x- or y-coordinate. 
+		
+		POINTS MAKEPOINTS(
+		   DWORD dwValue
+		);
+		
+		typedef struct tagPOINTS {
+		  SHORT x;
+		  SHORT y;
+		} POINTS, *PPOINTS;
 	*/
 	// Пример: Закодировать в одном 32 битном целом два 16 битных числа
 	int lParam;
 	short x = 10;
 	short y = 20;
 	
-	lParam = x;	
-	cout << lParam << " " << bitset<32>(lParam) << endl;
+	lParam = y;	
+	cout << lParam << "y " << bitset<32>(lParam) << endl;
 	lParam = lParam << 16;
 	cout << lParam << " " << bitset<32>(lParam) << endl;
-	cout << "y "<< y << " " << bitset<32>(y) << endl;
-	lParam = lParam | y;
+	cout << "x "<< y << " " << bitset<32>(x) << endl;
+	lParam = lParam | x;
 	cout << lParam << " " << bitset<32>(lParam) << endl;
 	
 	int hWord = HIWORD(lParam); //(lParam >> 16) & 0xffff;
